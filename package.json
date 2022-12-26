@@ -1,0 +1,58 @@
+{
+  "name": "picasarts-multichain",
+  "version": "1.0.0",
+  "description": "UI for picasarts.io",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "next build",
+    "start": "next start -p 5000",
+    "build-script": "webpack --config loyalty.webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://dungntbss@bitbucket.org/bsssupport/picasarts-front-page-polygon.git"
+  },
+  "keywords": [
+    "blockchain",
+    "money",
+    "streaming",
+    "dapp"
+  ],
+  "author": "dungnt@bsscommerce.com",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/bsssupport/picasarts-front-page-polygon.git#readme",
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.4",
+    "@chakra-ui/react": "^2.2.4",
+    "@emotion/cache": "latest",
+    "@emotion/react": "^11.9.3",
+    "@emotion/server": "latest",
+    "@emotion/styled": "^11.9.3",
+    "@openzeppelin/contracts": "^4.6.0",
+    "@reduxjs/toolkit": "^1.9.1",
+    "@truffle/hdwallet-provider": "^2.0.3",
+    "bn": "^1.0.5",
+    "ethers": "^5.6.9",
+    "form-data": "^4.0.0",
+    "formidable": "^2.0.1",
+    "formik": "^2.2.9",
+    "framer-motion": "^6.3.15",
+    "ipfs-core": "^0.15.4",
+    "ipfs-http-client": "^57.0.3",
+    "latest": "^0.2.0",
+    "mime": "^3.0.0",
+    "mongoose": "^6.1.7",
+    "next": "latest",
+    "react": "^18.2.0",
+    "react-color": "^2.19.3",
+    "react-datepicker": "^4.8.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.1",
+    "react-redux": "^8.0.5",
+    "web3": "^1.2.9",
+    "web3-eth-contract": "^1.7.4",
+    "web3-provider-engine": "~15.0.12",
+    "web3-utils": "^1.7.0"
+  }
+}
