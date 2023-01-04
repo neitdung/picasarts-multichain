@@ -12,10 +12,6 @@ export const slice = createSlice({
     name: 'hub',
     initialState,
     reducers: {
-        select: (state, action) => {
-            state.chain = action.payload;
-        },
-
     },
     extraReducers(builder) {
         builder.addCase(loadContract.fulfilled, (state, action) => {
@@ -29,6 +25,5 @@ export const slice = createSlice({
 })
 
 export const {
-
 } = slice.actions;
 export default slice.reducer;

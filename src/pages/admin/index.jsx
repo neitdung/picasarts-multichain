@@ -15,6 +15,9 @@ import { useDispatch, useSelector } from "react-redux";
 import loadContract from "src/state/hub/thunks/loadContract";
 import BoxLoading from "src/components/common/BoxLoading";
 import BaseFee from "src/components/admin/BaseFee";
+import HubChildren from "src/components/admin/HubChildren";
+import TokenHandle from "src/components/admin/TokenHandle";
+import WhitelistHandle from "src/components/admin/WhitelistHandle";
 
 export default function Admin() {
     const dispatch = useDispatch();
@@ -25,9 +28,11 @@ export default function Admin() {
     const router = useRouter();
 
     const loadAdmin = useCallback(async () => {
+        if (!account) {
+            router.push("/");
+        }
         let adminRole = await contract.DEFAULT_ADMIN_ROLE();
         let isAdmin = await contract.hasRole(adminRole, account);
-
         if (isAdmin) {
             setIsLoading(false);
         } else {
@@ -65,15 +70,16 @@ export default function Admin() {
                     <TabPanels>
                         <TabPanel>
                             <BaseFee />
+                            <HubChildren />
                         </TabPanel>
                         <TabPanel>
                             Artists
                         </TabPanel>
                         <TabPanel>
-                            Whitelist Addresses
+                            <WhitelistHandle />
                         </TabPanel>
                         <TabPanel>
-                            Payment Tokens
+                            <TokenHandle />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

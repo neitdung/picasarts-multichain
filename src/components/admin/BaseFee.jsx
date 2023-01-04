@@ -4,24 +4,13 @@ import {
     FormControl,
     Input,
     useToast,
-    Table,
-    Thead,
-    Tbody,
     Flex,
-    Tr,
-    Th,
-    Td,
-    TableCaption,
-    TableContainer,
     Button,
     FormLabel,
     FormHelperText,
     InputGroup,
     InputRightAddon,
-    InputRightElement,
-    Divider
 } from '@chakra-ui/react';
-import BoxLoading from "../common/BoxLoading";
 import { useDispatch, useSelector } from "react-redux";
 import { ethers } from "ethers";
 import { config } from "src/state/chain/config";
@@ -29,15 +18,13 @@ import { config } from "src/state/chain/config";
 export default function BaseFee() {
 
     const dispatch = useDispatch();
-    const { contract, loaded } = useSelector(state => state.hub);
+    const { contract, signer, loaded } = useSelector(state => state.hub);
     const { selectedChain } = useSelector(state => state.chain);
 
-    const [isLoading, setIsLoading] = useState(false);
     const [editRateFee, setEditRateFee] = useState("0");
     const [editCreateFee, setEditCreateFee] = useState("0");
     const [rateFee, setRateFee] = useState("0");
     const [createFee, setCreateFee] = useState("0");
-    const [newChild, setNewChild] = useState("");
 
     const toast = useToast();
 
@@ -51,13 +38,49 @@ export default function BaseFee() {
         setEditRateFee(rFeeString);
     }, [contract]);
 
+    const handleCreateFee = useCallback(async () => {
+        try {
+            let handleReq = await signer.setFee(ethers.utils.parseEther(editCreateFee));
+            await handleReq.wait();
+            setCreateFee(editCreateFee);
+            toast({
+                status: 'success',
+                title: "Transaction is confirmed",
+                duration: 3000
+            })
+        } catch (e) {
+            toast({
+                status: 'error',
+                title: `Error: ${e.message}`,
+                duration: 3000
+            })
+        }
+    }, [editCreateFee, signer])
+
+    const handleRateFee = useCallback(async () => {
+        try {
+            let handleReq = await signer.setRateFee(ethers.BigNumber.from(parseInt(Math.floor(editRateFee * 100))));
+            await handleReq.wait();
+            setRateFee(editRateFee);
+            toast({
+                status: 'success',
+                title: "Transaction is confirmed",
+                duration: 3000
+            })
+        } catch (e) {
+            toast({
+                status: 'error',
+                title: `Error: ${e.message}`,
+                duration: 3000
+            })
+        }
+    }, [editRateFee, signer])
+
     useEffect(() => {
         if (loaded) {
             loadFee();
         }
     }, [loaded])
-
-    if (isLoading) return <BoxLoading/>;
 
     return (
         <Box w='full' px={4} py={2}>
@@ -66,27 +89,19 @@ export default function BaseFee() {
                     <FormLabel>CREATE_FEE</FormLabel>
                     <InputGroup>
                         <Input value={editCreateFee} onChange={e => setEditCreateFee(e.target.value)} />
-                        <InputRightAddon p={0}><Button colorScheme='red' borderLeftRadius={0} w='full'>UPDATE</Button></InputRightAddon>
+                        <InputRightAddon p={0}><Button colorScheme='red' onClick={handleCreateFee} borderLeftRadius={0} w='full'>UPDATE</Button></InputRightAddon>
                     </InputGroup>
-                    <FormHelperText>Current create fee is: {createFee} {config[selectedChain].nativeCurrency.symbol}</FormHelperText>
+                    <FormHelperText>Current create fee is: {createFee} {selectedChain && config[selectedChain].nativeCurrency.symbol}</FormHelperText>
                 </FormControl>
                 <FormControl>
                     <FormLabel>RATE_FEE</FormLabel>
                     <InputGroup>
                         <Input value={editRateFee} onChange={e => setEditRateFee(e.target.value)} />
-                        <InputRightAddon p={0}><Button colorScheme='pink' borderLeftRadius={0} w='full'>UPDATE</Button></InputRightAddon>
+                        <InputRightAddon p={0}><Button colorScheme='pink' onClick={handleRateFee} borderLeftRadius={0} w='full'>UPDATE</Button></InputRightAddon>
                     </InputGroup>
                     <FormHelperText>Current rate fee is: {rateFee} %</FormHelperText>
                 </FormControl>
             </Flex>
-            <Divider my={4} />
-            <FormControl mt={4}>
-                <FormLabel>NEW HUB CHILD</FormLabel>
-                <InputGroup>
-                    <Input value={newChild} onChange={e => setNewChild(e.target.value)} />
-                    <InputRightAddon p={0}><Button colorScheme='blue' borderLeftRadius={0} w='full'>Submit</Button></InputRightAddon>
-                </InputGroup>
-            </FormControl>
         </Box>
     );
 }

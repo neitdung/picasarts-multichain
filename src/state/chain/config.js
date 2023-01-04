@@ -1,10 +1,10 @@
-export const hubAddress = "0xB5eA70dd6dd06f335B5196F5A64FafC88C9c0De3"
-export const marketAddress = "0x8082115700Be050A1c4f42Ad43e3fed67D8b6805"
-export const loanAddress = "0x0FCC13A4B25Eb4B08BddEF10F381ABd67A0D7f6a"
-export const rentalAddress = "0x150FE7F81A899480581ACF32edA921F4be1b6DDc"
-export const daiAddress = ""
-export const usdcAddress = ""
-export const usdtAddress = ""
+export const hubAddress = "0x128d9a6FE5b7105A633385dfc8E14F88481D5c7b"
+export const marketAddress = "0x8aC74830691a89A6219D9E39D2969677D873be56"
+export const loanAddress = "0x0f141EcD74b633c6159C1912f7391405227431a7"
+export const rentalAddress = "0x479013Ec120B18D741604C210C387A18Fd351EAe"
+export const daiAddress = "0xbFf9E179D2eC0760D00a49d209157Fa8bDBDe27b"
+export const usdcAddress = "0x6E8cC6c439f1C2C7389291cE82A36C6bc84DC21d"
+export const usdtAddress = "0xf118924Aac895fad8CF73f621b5ADA9aDb3644F5"
 export const noneAddress = "0x0000000000000000000000000000000000000000"
 
 export const config = {
@@ -28,7 +28,7 @@ export const config = {
     "picasarts": {
         rpcAddress: "https://goerli.infura.io/v3/",
         logoURL: "",
-        wssAddress: "https://goerli.infura.io/v3/",
+        wssAddress: "wss://goerli.infura.io/v3/",
         chainId: 5,
         blockchainExplorer: "https://goerli.etherscan.io",
         name: "Goerli chain",

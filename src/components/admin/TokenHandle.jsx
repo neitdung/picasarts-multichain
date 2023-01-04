@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     Box,
     FormControl,
@@ -17,83 +17,102 @@ import {
     TableContainer,
     Button
 } from '@chakra-ui/react';
-import {
-    useRouter
-} from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { createFtContract } from "src/state/hub/utils/helper";
+import loadContract from "src/state/market/thunks/loadContract";
+import { CloseIcon, PlusSquareIcon } from "@chakra-ui/icons";
 
-export default function Admin() {
-    const [isLoading, setIsLoading] = useState(true);
+export default function TokenHandle() {
+    const dispatch = useDispatch();
+    const { loaded, signer } = useSelector(state => state.hub);
+    const { contract: marketContract, loaded: marketLoaded } = useSelector(state => state.market);
     const [listToken, setListToken] = useState([]);
     const [newToken, setNewToken] = useState('');
     const toast = useToast();
-    const router = useRouter();
-
-    const checkAdmin = async (adminAddress) => {
-        let owner = await marketContract.obj.owner();
-        return owner == adminAddress;
-    }
-
-    const loadAdmin = async (adminAddress) => {
-        let isAdmin = await checkAdmin(adminAddress);
-        if (isAdmin) {
-            setIsLoading(false);
-            loadTokens();
-        } else {
-            router.push("/");
-            toast({
-                title: 'You are not the admin',
-                description: "Please switch to the admin account.",
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-        }
-    }
-
-    const loadTokenData = async (tokenAddr) => {
-        let tokenContract = createFtContractWithSigner(tokenAddr);
-        let name = await tokenContract.name();
-        let symbol = await tokenContract.symbol();
-        return { address: tokenAddr, name, symbol };
-    }
 
     const loadTokens = async () => {
-        let tokens = await marketContract.obj.getAcceptTokens();
-        let convertedTokens = []
+        let tokens = await marketContract.getAcceptTokens();
+        console.log(tokens)
+        let convertedTokens = [];
+        let namePromises = [];
+        let symbolPromises = [];
         for (let i = 0; i < tokens.length; i++) {
-            let tokenData = await loadTokenData(tokens[i])
-            convertedTokens.push(tokenData);
+            let tokenContract = createFtContract(tokens[i]);
+            namePromises.push(tokenContract.name());
+            symbolPromises.push(tokenContract.symbol());
+        }
+        let nameTokens = await Promise.all(namePromises);
+        let symbolTokens = await Promise.all(symbolPromises);
+        for (let i = 0; i < tokens.length; i++) {
+            convertedTokens.push({
+                address: tokens[i],
+                name: nameTokens[i],
+                symbol: symbolTokens[i]
+            })
         }
         setListToken(convertedTokens);
     }
 
-    const remove = async (tokenAddr) => {
-        await marketContract.obj.removeToken(tokenAddr);
-        setTimeout(() => {
-            router.reload();
-        }, 7000)
-    }
+    const handleRemoveToken = useCallback(async (index) => {
+        try {
+            let handleReq = await signer.removeToken(listToken[index].address);
+            await handleReq.wait();
+            let newList = [...listToken];
+            newList.splice(index, 1)
+            setListToken(newList);
 
-    const addToken = async () => {
-        await marketContract.obj.addAcceptToken(newToken);
-        setTimeout(() => {
-            router.reload();
-        }, 7000)
-    }
+            toast({
+                status: 'success',
+                title: "Transaction is confirmed",
+                duration: 3000
+            })
+        } catch (e) {
+            toast({
+                status: 'error',
+                title: `Error: ${e.message}`,
+                duration: 3000
+            })
+        }
+    }, [listToken, signer, loaded])
 
-    // useEffect(() => {
-    //     if (mounted && marketContract.loaded && _address) {
-    //         loadAdmin(_address);
-    //     }
-    // }, [mounted, marketContract, _address]);
+    const handleAddToken = useCallback(async () => {
+        try {
+            let handleReq = await signer.addAcceptToken(newToken);
+            await handleReq.wait();
+            let tokenContract = createFtContract(newToken);
+            let name = await tokenContract.name();
+            let symbol = await tokenContract.symbol();
+            let newList = [...listToken];
+            newList.push({
+                address: newToken,
+                name,
+                symbol
+            });
+            setListToken(newList);
+            toast({
+                status: 'success',
+                title: "Transaction is confirmed",
+                duration: 3000
+            })
+        } catch (e) {
+            toast({
+                status: 'error',
+                title: `Error: ${e.message}`,
+                duration: 3000
+            })
+        }
+    }, [newToken, listToken, signer, loaded])
 
-    if (isLoading) return <Box padding='6' w='full' boxShadow='lg' bg='white'>
-        <SkeletonCircle size='10' />
-        <SkeletonText mt='4' noOfLines={4} spacing='4' />
-    </Box>;
+    useEffect(() => {
+        if (!marketLoaded) {
+            dispatch(loadContract());
+        } else {
+            loadTokens()
+        }
+    }, [marketLoaded])
 
     return (
-        <Box w='full' bg='gray.200' p={20}>
+        <Box w='full' py={4}>
             <Box bg="white" p={6} borderRadius={10} mx={20}>
                 <Flex gap={2}>
                     <FormControl>
@@ -104,7 +123,7 @@ export default function Admin() {
                             onChange={e => setNewToken(e.target.value)}
                         />
                     </FormControl>
-                    <Button onClick={() => addToken()} minW={200}>Add</Button>
+                    <Button colorScheme='blue' leftIcon={<PlusSquareIcon />} onClick={() => handleAddToken()} minW={200}>Add</Button>
                 </Flex>
                 <TableContainer borderRadius={10} border='1px' mt={10}>
                     <Table variant='striped' colorScheme='teal'>
@@ -118,12 +137,12 @@ export default function Admin() {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {listToken.map(item =>
+                            {listToken.map((item, index) =>
                                 <Tr>
                                     <Td>{item.address}</Td>
                                     <Td>{item.name}</Td>
                                     <Td>{item.symbol}</Td>
-                                    <Td><Button onClick={() => remove(item.address)}>Delete</Button></Td>
+                                    <Td><Button colorScheme='red' leftIcon={<CloseIcon />} onClick={() => handleRemoveToken(index)}>Delete</Button></Td>
                                 </Tr>
                             )}
                         </Tbody>
