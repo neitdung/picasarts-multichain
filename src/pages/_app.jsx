@@ -9,60 +9,24 @@ import Footer from 'src/components/layout/Footer';
 import theme from 'src/styles/theme';
 import { Box, SkeletonCircle, SkeletonText, ChakraProvider } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { AppProvider } from 'src/state/app';
+import { Provider } from 'react-redux';
+import { store, persistor } from 'src/state/store';
+import { PersistGate } from 'redux-persist/integration/react';
 import NotInstall from 'src/components/common/NotInstall';
 
 export default function MyApp(props) {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
     const Router = useRouter();
-    const skipToContentRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
-    const [isFirstLoading, setIsFirstLoading] = useState(true);
-    const [windowObj, setWindowObj] = useState(null);
-    const toggleMobileNavigationActive = useCallback(
-        () =>
-            setMobileNavigationActive(
-                (mobileNavigationActive) => !mobileNavigationActive,
-            ),
-        [],
-    );
-
-    const toggleIsLoading = useCallback((path) => {
-        setIsLoading((isLoading) => !isLoading)
-        if (path === "/cp/add") {
-
-        } else {
-            Router.push(path);
-        }
-
-    }, []);
 
     useEffect(() => {
         Router.events.on('routeChangeStart', () => setIsLoading(true))
         Router.events.on('routeChangeComplete', () => setIsLoading(false))
     }, [Router])
 
-    useEffect(() => {
-        if (isFirstLoading) {
-            setIsFirstLoading(false);
-            setWindowObj(window);
-        }
-
-    }, [isFirstLoading, windowObj])
-
-    const skipToContentTarget = (
-        <a id="SkipToContentTarget" ref={skipToContentRef} tabIndex={-1} />
-    );
-
     const actualPageMarkup = (
-        <>
-            {skipToContentTarget}
-            {windowObj?.ethereum ? <Component {...pageProps} />
-                : <NotInstall/>
-            }
-        </>
+        <Component {...pageProps} />
     );
 
     const loadingPageMarkup = (
@@ -84,21 +48,15 @@ export default function MyApp(props) {
                 <meta name={"title"} title={"Picasarts"} />
                 <title>Picasarts</title>
             </Head>
-            <main>
-                {windowObj &&
-                    <ChakraProvider theme={theme}>
-                        <AppProvider>
-                            <AppBar
-                                showMobileNavigation={mobileNavigationActive}
-                                onNavigationDismiss={toggleMobileNavigationActive}
-                                skipToContentTarget={skipToContentRef.current}
-                            />
-                            {pageMarkup}
-                            <Footer />
-                        </AppProvider>
-                    </ChakraProvider>
-                }
-            </main>
+            <ChakraProvider theme={theme}>
+                <Provider store={store}>
+                    <PersistGate loading={null} persistor={persistor}>
+                        <AppBar />
+                        {pageMarkup}
+                        <Footer />
+                    </PersistGate>
+                </Provider>
+            </ChakraProvider>
         </CacheProvider>
     );
 }

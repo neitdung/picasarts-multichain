@@ -25,14 +25,11 @@ import FacebookIcon from 'src/components/icons/Facebook';
 import InstagramIcon from 'src/components/icons/Instagram';
 import TwitterIcon from 'src/components/icons/Twitter';
 import NotConnected from 'src/components/common/NotConnected';
-import { appStore, uploadBtfs } from 'src/state/app';
 import ImageUpload from 'src/components/common/ImageUpload';
 import UserCard from 'src/components/user/Card';
-import { hasArtistRole } from 'src/state/collection';
 
 export default function Settings() {
-    const { state, dispatch } = useContext(appStore);
-    const { mounted, wallet: { info, signer: {_address}, connected } } = state;
+
     const [isSubmitting, setIsSubmitting] = useState(true);
     const [isArtist, setIsArtist] = useState(false);
     const [avatar, setAvatar] = useState('');
@@ -162,16 +159,16 @@ export default function Settings() {
         setIsSubmitting(false);
     }
 
-    useEffect(() => {
-        if (mounted && info.loaded) {
-            setAvatar(info.avatar);
-            setBanner(info.banner);
-            checkArtist();
-        }
-    }, [mounted, info]);
+    // useEffect(() => {
+    //     if (mounted && info.loaded) {
+    //         setAvatar(info.avatar);
+    //         setBanner(info.banner);
+    //         checkArtist();
+    //     }
+    // }, [mounted, info]);
 
-    if (!mounted || !info.loaded) return <Skeleton h={'80vh'} />
-    if (!connected) return <NotConnected />
+    // if (!mounted || !info.loaded) return <Skeleton h={'80vh'} />
+    // if (!connected) return <NotConnected />
 
     return (
         <Grid bg="gray.100" p={20} templateColumns='repeat(3, 1fr)' gap={12}>
@@ -182,7 +179,6 @@ export default function Settings() {
             <GridItem colSpan={2} >
                 <Box bg="white" p={6} borderRadius={10} >
                     <Formik
-                        initialValues={{ address: _address, ...info }}
                         onSubmit={submitUser}
                         validate={values => {
                             const errors = {};
@@ -325,7 +321,7 @@ export default function Settings() {
                                             disabled={isSubmitting}
                                             leftIcon={isSubmitting && <CircularProgress size={'20px'} isIndeterminate />}
                                         >
-                                            {info.registered ? "Update" : "Register"}
+                                            {/* {info.registered ? "Update" : "Register"} */}
                                         </Button>
                                         {(!isArtist) && <Button type="button"
                                             onClick={registerArtist}
@@ -352,8 +348,8 @@ export default function Settings() {
                     editAvatar={editAvatar}
                     editBanner={editBanner}
                     banner={banner}
-                    name={info.name}
-                    bio={info.bio}
+                    // name={info.name}
+                    // bio={info.bio}
                 />
             </GridItem>
         </Grid>

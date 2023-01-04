@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     FormControl,
@@ -17,14 +17,11 @@ import {
     TableContainer,
     Button
 } from '@chakra-ui/react';
-import { appStore, createFtContractWithSigner } from 'src/state/app';
 import {
     useRouter
 } from "next/router";
 
 export default function Admin() {
-    const { state } = useContext(appStore);
-    const { mounted, wallet: { signer: { _address } }, marketContract } = state;
     const [isLoading, setIsLoading] = useState(true);
     const [listToken, setListToken] = useState([]);
     const [newToken, setNewToken] = useState('');
@@ -84,15 +81,11 @@ export default function Admin() {
         }, 7000)
     }
 
-    useEffect(() => {
-        if (mounted && marketContract.loaded && _address) {
-            loadAdmin(_address);
-        }
-    }, [mounted, marketContract, _address]);
-
-    useEffect(() => {
-        console.log(listToken)
-    })
+    // useEffect(() => {
+    //     if (mounted && marketContract.loaded && _address) {
+    //         loadAdmin(_address);
+    //     }
+    // }, [mounted, marketContract, _address]);
 
     if (isLoading) return <Box padding='6' w='full' boxShadow='lg' bg='white'>
         <SkeletonCircle size='10' />
@@ -125,7 +118,7 @@ export default function Admin() {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {listToken.map(item => 
+                            {listToken.map(item =>
                                 <Tr>
                                     <Td>{item.address}</Td>
                                     <Td>{item.name}</Td>

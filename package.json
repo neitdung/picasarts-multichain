@@ -4,9 +4,9 @@
   "description": "UI for picasarts.io",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev -p 5000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 5000",
+    "start": "next start",
     "build-script": "webpack --config loyalty.webpack.config.js"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "@emotion/react": "^11.9.3",
     "@emotion/server": "latest",
     "@emotion/styled": "^11.9.3",
+    "@metamask/detect-provider": "^2.0.0",
     "@openzeppelin/contracts": "^4.6.0",
     "@reduxjs/toolkit": "^1.9.1",
     "@truffle/hdwallet-provider": "^2.0.3",
@@ -50,7 +51,8 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.1",
     "react-redux": "^8.0.5",
-    "web3": "^1.2.9",
+    "redux-persist": "^6.0.0",
+    "web3": "^1.7.4",
     "web3-eth-contract": "^1.7.4",
     "web3-provider-engine": "~15.0.12",
     "web3-utils": "^1.7.0"

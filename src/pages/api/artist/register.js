@@ -1,39 +1,29 @@
 import connectDB from 'src/middleware/mongodb';
-import { hubAddress } from "src/config/contractAddress";
-import Hub from 'src/abis/Hub.json';
-import Web3 from 'web3';
+import ArtistRequest from 'src/models/Artist';
+import User from 'src/models/User';
 
 const handler = async (req, res) => {
-    if (req.method === 'POST') {
-        const web3 = new Web3(process.env.currentProvider);
-        const collectionContract = new web3.eth.Contract(
-            Hub.abi,
-            hubAddress
-        );
-        const artistRole = await collectionContract.methods.ARTIST_ROLE().call();
-        const tx = collectionContract.methods.grantRole(artistRole, req.body.address);
-        const gas = await tx.estimateGas({ from: process.env.metaPK });
-        const gasPrice = await web3.eth.getGasPrice();
-        const data = tx.encodeABI();
-        const nonce = await web3.eth.getTransactionCount(process.env.metaPK) + 1;
-
-        const signedTx = await web3.eth.accounts.signTransaction(
-            {
-                to: collectionContract.options.address,
-                data,
-                gas,
-                gasPrice,
-                nonce,
-                chainId: 1281
-            },
-            process.env.metaSK
-        );
-
-        await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-        return res.status(200).send({success: "ok"});
-    } else {
-        res.status(422).send('req_method_not_supported');
+    try {
+        if (req.method === 'POST') {
+            if (req.body.chain && req.body.address) {
+                let user = await User.findOne({ address: req.body.address });
+                if (user._id) {
+                    let newReq = new ArtistRequest({ address: req.body.address, chain: req.body.chain, user: user_id });
+                    await newReq.save();
+                    return res.status(200).send({ error: false });
+                } else {
+                    return res.status(422).send({ error: true, message: "user_not_registered" });
+                }
+            } else {
+                return res.status(422).send({ error: true, message: "missing_fields" });
+            }
+        } else {
+            return res.status(422).send({error: true, message: "method_not_supported"});
+        }
+    } catch (e) {
+        return res.status(422).send({ error: true, message: e.message });
     }
+
 };
 
 export default connectDB(handler);
