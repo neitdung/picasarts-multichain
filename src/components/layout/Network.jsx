@@ -17,11 +17,12 @@ import { useRouter } from "next/router";
 import WalletIcon from 'src/components/icons/Wallet';
 import { disconnectNetwork, setIsConnecting, handleEthereumAccountChange } from 'src/state/chain/slice';
 import NavItem from './NavItem';
+import loadContract from 'src/state/hub/thunks/loadContract';
 
 const USER_ITEMS = [
     {
         label: 'Profile',
-        href: '/user/settings',
+        href: '/user/profile',
     },
     {
         label: 'My Collectibles',

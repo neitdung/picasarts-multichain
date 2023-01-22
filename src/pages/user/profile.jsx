@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, Field } from "formik";
 import {
     Box,
@@ -15,10 +15,8 @@ import {
     Flex,
     Text,
     Center,
-    Skeleton,
     Textarea,
     useToast,
-    CircularProgress
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import FacebookIcon from 'src/components/icons/Facebook';
@@ -27,11 +25,21 @@ import TwitterIcon from 'src/components/icons/Twitter';
 import NotConnected from 'src/components/common/NotConnected';
 import ImageUpload from 'src/components/common/ImageUpload';
 import UserCard from 'src/components/user/Card';
-
+import { useDispatch, useSelector } from 'react-redux';
+import getProfile from 'src/state/profile/thunks/getProfile';
+import { uploadBtfs } from 'src/state/util';
+import { setIsConnecting } from 'src/state/profile/slice';
+import { useRouter } from 'next/router';
+import checkArtist from 'src/state/profile/thunks/checkArtist';
+import loadContract from 'src/state/hub/thunks/loadContract';
 export default function Settings() {
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const { loaded } = useSelector(state => state.hub);
+    const account = useSelector(state => state.chain.account);
+    const profile = useSelector(state => state.profile);
+    const selectedChain = useSelector(state => state.chain.selectedChain);
 
-    const [isSubmitting, setIsSubmitting] = useState(true);
-    const [isArtist, setIsArtist] = useState(false);
     const [avatar, setAvatar] = useState('');
     const [banner, setBanner] = useState('');
     const [editAvatar, setEditAvatar] = useState(false);
@@ -39,44 +47,59 @@ export default function Settings() {
 
     const toast = useToast();
 
-    const submitUser = (values) => {
-        if (info.registered) {
-            editUser(values);
-        } else {
-            registerUser(values);
+    const submitUser = async (values) => {
+        let [uploadedAvatar, uploadedBanner] = await Promise.all([
+            editAvatar ? uploadBtfs(avatar) : () => { },
+            editBanner ? uploadBtfs(banner) : () => { }
+        ]);
+
+        if (editAvatar) {
+            values.avatar = uploadedAvatar;
         }
+        if (editBanner) {
+            values.banner = uploadedBanner;
+        }
+        setEditAvatar(false);
+        setEditBanner(false);
+        if (profile.data.isRegistered) {
+            await editUser(values);
+        } else {
+            await registerUser(values);
+        }
+        router.reload();
     }
 
     const registerArtist = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
+        dispatch(setIsConnecting(true))
         let res = await fetch("/api/artist/register", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ address: _address })
+            body: JSON.stringify({ chain: selectedChain, address: account })
         });
-        if (res.status !== 200) {
+        let resJson = await res.json();
+        if (resJson.error) {
             toast({
-                title: "RegisterA failed",
+                title: "Register Artist failed: " + resJson.message,
                 status: 'error',
                 duration: 3000,
                 isClosable: true,
             });
         } else {
             toast({
-                title: "RegisterA success",
+                title: "Register Artist success",
                 status: 'success',
                 duration: 3000,
                 isClosable: true,
             });
         }
-        setIsSubmitting(false);
+        dispatch(setIsConnecting(false))
     }
 
     const registerUser = async (values) => {
-        setIsSubmitting(true);
+        dispatch(setIsConnecting(true))
         let [uploadedAvatar, uploadedBanner] = await Promise.all([
             editAvatar ? uploadBtfs(avatar) : () => { },
             editBanner ? uploadBtfs(banner) : () => { }
@@ -112,12 +135,11 @@ export default function Settings() {
                 isClosable: true,
             });
         }
-        window.location.reload();
-        setIsSubmitting(false);
+        dispatch(setIsConnecting(false))
     }
 
     const editUser = async (values) => {
-        setIsSubmitting(true);
+        dispatch(setIsConnecting(true))
         let [uploadedAvatar, uploadedBanner] = await Promise.all([
             editAvatar ? uploadBtfs(avatar) : () => { },
             editBanner ? uploadBtfs(banner) : () => { }
@@ -150,25 +172,26 @@ export default function Settings() {
                 isClosable: true,
             });
         }
-        setIsSubmitting(false);
+        dispatch(setIsConnecting(false))
     }
 
-    const checkArtist = async() => {
-        let isRegisterArtist = await dispatch(hasArtistRole(_address));
-        setIsArtist(isRegisterArtist);
-        setIsSubmitting(false);
-    }
+    useEffect(() => {
+        if (profile.data.loaded) {
+            setAvatar(profile.data.avatar);
+            setBanner(profile.data.banner);
+        } else {
+            dispatch(getProfile())
+        }
+    }, [profile, account]);
 
-    // useEffect(() => {
-    //     if (mounted && info.loaded) {
-    //         setAvatar(info.avatar);
-    //         setBanner(info.banner);
-    //         checkArtist();
-    //     }
-    // }, [mounted, info]);
-
-    // if (!mounted || !info.loaded) return <Skeleton h={'80vh'} />
-    // if (!connected) return <NotConnected />
+    useEffect(() => {
+        if (loaded) {
+            dispatch(checkArtist())
+        } else {
+            dispatch(loadContract())
+        }
+    }, [loaded])
+    if (!account || !profile.data.loaded) return <NotConnected />
 
     return (
         <Grid bg="gray.100" p={20} templateColumns='repeat(3, 1fr)' gap={12}>
@@ -180,6 +203,7 @@ export default function Settings() {
                 <Box bg="white" p={6} borderRadius={10} >
                     <Formik
                         onSubmit={submitUser}
+                        initialValues={{ address: account, ...profile.data }}
                         validate={values => {
                             const errors = {};
                             if (!values.name) {
@@ -318,20 +342,17 @@ export default function Settings() {
                                             _hover={{
                                                 bg: 'pink.300',
                                             }}
-                                            disabled={isSubmitting}
-                                            leftIcon={isSubmitting && <CircularProgress size={'20px'} isIndeterminate />}
+                                            isLoading={!profile.data.loaded || profile.isConnecting}
                                         >
-                                            {/* {info.registered ? "Update" : "Register"} */}
+                                            {profile.data.isRegistered ? "Update" : "Register"}
                                         </Button>
-                                        {(!isArtist) && <Button type="button"
+                                        {(profile.isArtist !== 2) && <Button
                                             onClick={registerArtist}
                                             color={'white'}
                                             bgColor='#ef1399'
                                             w={'50%'}
-                                            disabled={isSubmitting}
-                                            _hover={{
-                                                bg: 'pink.300',
-                                            }}
+                                            isDisabled={profile.isArtist === 1}
+                                            isLoading={!profile.data.loaded || profile.isConnecting}
                                         >
                                             Register as Artist
                                         </Button>}
@@ -345,11 +366,11 @@ export default function Settings() {
             <GridItem>
                 <UserCard
                     avatar={avatar}
+                    banner={banner}
                     editAvatar={editAvatar}
                     editBanner={editBanner}
-                    banner={banner}
-                    // name={info.name}
-                    // bio={info.bio}
+                    name={profile.data.name}
+                    bio={profile.data.bio}
                 />
             </GridItem>
         </Grid>

@@ -43,8 +43,8 @@ let user = new Schema({
         type: String,
         required: false
     },
-    interact_collections: [String]
 });
+mongoose.models = {};
 let User = mongoose.model('User', user);
 
 export default User;

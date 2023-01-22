@@ -12,8 +12,13 @@ let artist = new Schema({
         type: String,
         required: true,
     },
+    approved: {
+        type: Boolean,
+        default: false
+    },
     user: { type: ObjectId, ref: 'User' }
 });
+mongoose.models = {};
 artist.index({ address: 1, chain: 1 }, { unique: true })
 let ArtistRequest = mongoose.model('ArtistRequest', artist);
 

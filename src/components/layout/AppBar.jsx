@@ -149,6 +149,13 @@ export default function AppBar() {
                             </Button>
                         </Link>
                     </NextLink>
+                    <NextLink href='/admin' passHref>
+                        <Link>
+                            <Button mx={4} variant={'outline'}>
+                                Admin
+                            </Button>
+                        </Link>
+                    </NextLink>
                 </Flex>
                 <Network />
             </Flex>

@@ -18,6 +18,7 @@ import BaseFee from "src/components/admin/BaseFee";
 import HubChildren from "src/components/admin/HubChildren";
 import TokenHandle from "src/components/admin/TokenHandle";
 import WhitelistHandle from "src/components/admin/WhitelistHandle";
+import ArtistGranting from "src/components/admin/ArtistGranting";
 
 export default function Admin() {
     const dispatch = useDispatch();
@@ -73,7 +74,7 @@ export default function Admin() {
                             <HubChildren />
                         </TabPanel>
                         <TabPanel>
-                            Artists
+                            <ArtistGranting />
                         </TabPanel>
                         <TabPanel>
                             <WhitelistHandle />

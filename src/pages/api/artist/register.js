@@ -8,7 +8,7 @@ const handler = async (req, res) => {
             if (req.body.chain && req.body.address) {
                 let user = await User.findOne({ address: req.body.address });
                 if (user._id) {
-                    let newReq = new ArtistRequest({ address: req.body.address, chain: req.body.chain, user: user_id });
+                    let newReq = new ArtistRequest({ address: req.body.address, chain: req.body.chain, user: user._id });
                     await newReq.save();
                     return res.status(200).send({ error: false });
                 } else {

@@ -107,7 +107,7 @@ export default function CollectionCreate() {
             }
         } else {
             toast({
-                title: "Please register as artist on profile/settings page",
+                title: "Please register as artist on profile page",
                 status: 'error',
                 duration: 3000,
                 isClosable: true,

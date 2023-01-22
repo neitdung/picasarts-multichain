@@ -50,6 +50,7 @@ let nft = new Schema({
         required: true
     }
 });
+mongoose.models = {};
 let Nft = mongoose.model('Nft', nft);
 
 export default Nft;

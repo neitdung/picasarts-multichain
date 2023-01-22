@@ -8,22 +8,27 @@ import hubReducer from "./hub/slice";
 import loanReducer from "./loan/slice";
 import marketReducer from "./market/slice";
 import rentalReducer from "./rental/slice";
+import profileReducer from "./profile/slice";
 
-const persistConfig = {
+const chainPersistConfig = {
     key: 'chain',
     storage,
 }
-
-const chain = persistReducer(persistConfig, chainReducer)
+const profilePersistConfig = {
+    key: 'profile',
+    storage,
+}
+const chainPersist = persistReducer(chainPersistConfig, chainReducer)
 
 export const store = configureStore({
     reducer: {
         // cache: cacheReducer,
-        chain: chain,
+        chain: chainPersist,
         hub: hubReducer,
         loan: loanReducer,
         market: marketReducer,
         rental: rentalReducer,
+        profile: profileReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
