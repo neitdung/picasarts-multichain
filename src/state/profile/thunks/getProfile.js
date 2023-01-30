@@ -10,8 +10,11 @@ const getProfile = createAsyncThunk("profile/get", async (payload = null, {getSt
             },
         });
 
-        let user = await res.json();
-        return { error: false, data: user };
+        let resJson = await res.json();
+        if (resJson.error) {
+            return { error: true }
+        }
+        return { error: false, data: resJson.data };
     } catch (e) {
         console.log(e.message)
         return { error: true }

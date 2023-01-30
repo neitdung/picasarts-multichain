@@ -90,7 +90,7 @@ export default function NftBuy({ contractAddress, tokenId }) {
 
     const loadCollectionData = async () => {
         const cData = await collectionContract.obj.getCollectionByAddress(contractAddress);
-        let cMetadata = await fetch(`http://127.0.0.1:8080/ipfs/${cData.metadata}`);
+        let cMetadata = await fetch(`http://127.0.0.1:8080/btfs/${cData.metadata}`);
         let cMetadataRes = await cMetadata.json();
         setCollectionData({ ...cData, ...cMetadataRes });
     }
@@ -208,7 +208,7 @@ export default function NftBuy({ contractAddress, tokenId }) {
         <Box>
             <SimpleGrid columns={2} p={20} gap={20}>
                 <Box p={5} borderRadius={10} bgColor={metadata?.background_color ? metadata.background_color : 'gray.200'} h={'min'}>
-                    {(metadata?.image) ? <Image borderRadius={10} src={metadata.image.replace("ipfs://", "http://127.0.0.1:8080/ipfs/")} w={'full'} /> : <Skeleton w={'full'} minH={500} />}
+                    {(metadata?.image) ? <Image borderRadius={10} src={metadata.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} w={'full'} /> : <Skeleton w={'full'} minH={500} />}
                 </Box>
                 <VStack gap={4} align={'left'}>
                     <Box>
@@ -220,14 +220,14 @@ export default function NftBuy({ contractAddress, tokenId }) {
                         <Box>
                             <Text fontWeight={700} my={2}>Creator</Text>
                             <Flex align={'center'} gap={5}>
-                                <Avatar size={'sm'} name='Avatar Creator' src={creatorData?.avatar ? `http://127.0.0.1:8080/ipfs/${creatorData?.avatar}` : ""} />
+                                <Avatar size={'sm'} name='Avatar Creator' src={creatorData?.avatar ? `http://127.0.0.1:8080/btfs/${creatorData?.avatar}` : ""} />
                                 <NextLink href={`/artist/${metadata?.creator_address}`} passHref><Link>{metadata?.creator_name}</Link></NextLink>
                             </Flex>
                         </Box>
                         {collectionData && <Box>
                             <Text fontWeight={700} my={2}>Collection</Text>
                             <Flex align={'center'} gap={5}>
-                                <Avatar size={'sm'} name='Collection Name' src={collectionData.logo ? `http://127.0.0.1:8080/ipfs/${collectionData.logo}` : ""} />
+                                <Avatar size={'sm'} name='Collection Name' src={collectionData.logo ? `http://127.0.0.1:8080/btfs/${collectionData.logo}` : ""} />
                                 <NextLink href={`/collection/${collectionData?.id}`} passHref><Link>{collectionData?.name}</Link></NextLink>
                             </Flex>
                         </Box>

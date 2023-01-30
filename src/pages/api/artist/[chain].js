@@ -1,5 +1,6 @@
 import connectDB from 'src/middleware/mongodb';
 import ArtistRequest from "src/models/Artist";
+import User from "src/models/User";
 
 const handler = async (req, res) => {
     if (req.method === 'GET') {

@@ -185,7 +185,7 @@ export default function FarmInfo({ id }) {
                                             <NextLink href={`/nft/${item.contract_address}/${item.token_id}/buy`} passHref>
                                                 <Link>{item.name.length > 6 ? item.name.substring(0, 10) + "..." : item.name}</Link>
                                             </NextLink>
-                                            <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/ipfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
+                                            <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
                                         </Flex>
                                     </WrapItem>
                                 )}
@@ -205,7 +205,7 @@ export default function FarmInfo({ id }) {
                                                 <NextLink href={`/nft/${item.contract_address}/${item.token_id}/buy`} passHref>
                                                     <Link>{item.name.length > 6 ? item.name.substring(0, 10) + "..." : item.name}</Link>
                                                 </NextLink>
-                                                <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/ipfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
+                                                <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
                                             </Flex>
                                         </Flex>
                                     </WrapItem>
@@ -228,7 +228,7 @@ export default function FarmInfo({ id }) {
                                                     <NextLink href={`/nft/${item.contract_address}/${item.token_id}/buy`} passHref>
                                                         <Link>{item.name.length > 6 ? item.name.substring(0, 10) + "..." : item.name}</Link>
                                                     </NextLink>
-                                                    <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/ipfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
+                                                    <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
                                                 </Flex>
                                             </Flex>
                                         </Flex>

@@ -95,7 +95,7 @@ export default function NFTCreate() {
 
     const saveNFTToDB = async (contractSelected, tokenId, values, metadata) => {
         await new Promise(resolve => setTimeout(resolve, 2000));
-        let metaFetch = await fetch(`http://127.0.0.1:8080/ipfs/${metadata.ipnft}/metadata.json`);
+        let metaFetch = await fetch(`http://127.0.0.1:8080/btfs/${metadata.ipnft}/metadata.json`);
         const { image } = await metaFetch.json();
         const options = {
             method: 'POST',

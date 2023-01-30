@@ -137,14 +137,14 @@ export default function AppBar() {
                     </InputGroup>
                     <NextLink href='/create' passHref>
                         <Link>
-                            <Button mx={4} variant={'outline'}>
+                            <Button mx={4} variant={'solid'} colorScheme='pink'>
                                 Create
                             </Button>
                         </Link>
                     </NextLink>
                     <NextLink href='/import' passHref>
                         <Link>
-                            <Button variant={'outline'}>
+                            <Button variant={'outline'} colorScheme='purple'>
                                 Import
                             </Button>
                         </Link>

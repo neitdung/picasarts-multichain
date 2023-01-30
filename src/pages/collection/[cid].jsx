@@ -33,7 +33,7 @@ export default function CollectionCid({ cid }) {
     const loadCollection = async () => {
         setIsLoading(true);
         let cData = await collectionContract.obj.getCollectionData(cid);
-        let cMetadata = await fetch(`http://127.0.0.1:8080/ipfs/${cData.metadata}`);
+        let cMetadata = await fetch(`http://127.0.0.1:8080/btfs/${cData.metadata}`);
         let cMetadataRes = await cMetadata.json();
         setInfo({ ...cData, ...cMetadataRes });
         let nfts = await getCollectionItems(cData.contractAddress);
@@ -58,14 +58,14 @@ export default function CollectionCid({ cid }) {
                 h={300}
                 w={'full'}
                 src={
-                    info.banner ? `http://127.0.0.1:8080/ipfs/${info.banner}` : 'https://picsum.photos/2000/200'
+                    info.banner ? `http://127.0.0.1:8080/btfs/${info.banner}` : 'https://picsum.photos/2000/200'
                 }
                 objectFit={'cover'}
             />
             <Flex justify={'center'} mt={-20}>
                 <Avatar
                     src={
-                        info.logo ? `http://127.0.0.1:8080/ipfs/${info.logo}` : 'https://picsum.photos/200/200'
+                        info.logo ? `http://127.0.0.1:8080/btfs/${info.logo}` : 'https://picsum.photos/200/200'
                     }
                     size={'2xl'}
                     alt={'Creator'}

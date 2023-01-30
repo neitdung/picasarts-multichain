@@ -8,13 +8,13 @@ const handler = async (req, res) => {
                 address: req.query.address
             });
             if (user) {
-                return res.status(200).send(user);
+                return res.status(200).send({error: false, data: user});
             } else {
-                return res.status(400).send({});
+                return res.status(400).send({error: true, message: 'not_found'});
 
             }
         } catch (error) {
-            return res.status(500).send(error.message);
+            return res.status(500).send({error:true, message: error.message});
         }
     } else {
         res.status(422).send('req_method_not_supported');

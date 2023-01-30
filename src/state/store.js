@@ -14,10 +14,7 @@ const chainPersistConfig = {
     key: 'chain',
     storage,
 }
-const profilePersistConfig = {
-    key: 'profile',
-    storage,
-}
+
 const chainPersist = persistReducer(chainPersistConfig, chainReducer)
 
 export const store = configureStore({

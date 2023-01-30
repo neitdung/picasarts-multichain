@@ -16,14 +16,22 @@ export default function ArtistGranting() {
     const { signer } = useSelector(state => state.hub);
     const selectedChain = useSelector(state => state.chain.selectedChain);
 
-    const [list, setList] = useState([]);
+    const [listApproved, setListApproved] = useState([]);
+    const [listWaiting, setListWaiting] = useState([]);
+
     const toast = useToast();
     
     const loadList = useCallback(async () => {
         try {
-            let waitingList = await fetch(`/api/artist/${selectedChain}`);
+            let waitingList = await fetch(`/api/artist/${selectedChain}`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             let waitingRes = await waitingList.json();
-            setList(waitingRes.result);
+            console.log(waitingRes)
+            setListApproved(waitingRes.result.filter(fItem => fItem.approved));
+            setListWaiting(waitingRes.result.filter(fItem => !fItem.approved));
         } catch (e) {
             toast({
                 status: 'error',
@@ -110,7 +118,7 @@ export default function ArtistGranting() {
         <VStack gap={2}>
             <Heading>List waiting</Heading>
             <SimpleGrid columns={3}>
-                {list.length > 0 && list.filter(fItem => !fItem.approved).map(item => 
+                {listWaiting.length !== 0 && listWaiting.map(item => 
                     <ArtistCard key={item.address} {...item.user} approved={false}
                         handleApprove={() => handleApprove(item.address)}
                         handleRemove={() => handleReject(item.address)}
@@ -120,7 +128,7 @@ export default function ArtistGranting() {
             <Divider />
             <Heading>List Approved</Heading>
             <SimpleGrid columns={3}>
-                {list.length > 0 && list.filter(fItem => fItem.approved).map(item =>
+                {listApproved.length > 0 && listApproved.map(item =>
                     <ArtistCard key={item.address} {...item.user} approved={true}
                         handleApprove={() => handleApprove(item.address)}
                         handleRemove={() => handleRemove(item.address)}

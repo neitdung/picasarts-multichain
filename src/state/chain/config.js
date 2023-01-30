@@ -1,10 +1,12 @@
-export const hubAddress = "0x128d9a6FE5b7105A633385dfc8E14F88481D5c7b"
-export const marketAddress = "0x8aC74830691a89A6219D9E39D2969677D873be56"
-export const loanAddress = "0x0f141EcD74b633c6159C1912f7391405227431a7"
-export const rentalAddress = "0x479013Ec120B18D741604C210C387A18Fd351EAe"
-export const daiAddress = "0xbFf9E179D2eC0760D00a49d209157Fa8bDBDe27b"
-export const usdcAddress = "0x6E8cC6c439f1C2C7389291cE82A36C6bc84DC21d"
-export const usdtAddress = "0xf118924Aac895fad8CF73f621b5ADA9aDb3644F5"
+import configFile from "src/state/config.json";
+
+export const hubAddress = configFile.hub
+export const marketAddress = configFile.market
+export const loanAddress = configFile.loan
+export const rentalAddress = configFile.rental
+export const daiAddress = configFile.dai
+export const usdcAddress = configFile.usdc
+export const usdtAddress = configFile.usdt
 export const noneAddress = "0x0000000000000000000000000000000000000000"
 
 export const config = {

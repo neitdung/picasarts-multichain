@@ -128,49 +128,6 @@ export default function Create() {
                     </NextLink>
                 </Stack>
             </Box>
-            <Box
-                role={'group'}
-                p={6}
-                maxW={'330px'}
-                w={'full'}
-                bg={'white'}
-                boxShadow={'2xl'}
-                rounded={'lg'}
-                pos={'relative'}
-                zIndex={1}>
-                <Box
-                    rounded={'lg'}
-                    mt={-12}
-                    pos={'relative'}
-                    height={220}
-                >
-                    <Image
-                        rounded={'lg'}
-                        height={220}
-                        width={282}
-                        objectFit={'cover'}
-                        src={collectionImg1.src}
-                    />
-                </Box>
-                <Stack pt={5} align={'center'} gap={2}>
-                    <Skeleton w={'full'} startColor='pink.500' endColor='orange.500' h={5} />
-                    <Skeleton w={'full'} startColor='pink.500' endColor='orange.500' h={5} />
-                    <Skeleton w={'full'} startColor='pink.500' endColor='orange.500' h={5} />
-                    <NextLink href={'/farm/create'} as={'/farm/create'}>
-                        <Button fontSize={'sm'}
-                            fontWeight={700}
-                            color={'white'}
-                            w={'full'}
-                            bgGradient='linear(to-r, #f5505e, #ef1399)'
-                            _hover={{
-                                bg: 'pink.300',
-                            }}
-                        >
-                            FARM
-                        </Button>
-                    </NextLink>
-                </Stack>
-            </Box>
         </Flex>
     );
 }

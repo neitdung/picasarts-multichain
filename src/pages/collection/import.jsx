@@ -20,7 +20,6 @@ import {
     Divider
 } from "@chakra-ui/react";
 import { useRouter } from 'next/router';
-import { appStore, uploadBtfs, uploadMetadata, createNftContract } from 'src/state/app';
 import NotConnected from 'src/components/common/NotConnected';
 import CollectionCard from 'src/components/collection/Card';
 import ImageUpload from 'src/components/common/ImageUpload';
@@ -29,12 +28,19 @@ import InstagramIcon from 'src/components/icons/Instagram';
 import TwitterIcon from 'src/components/icons/Twitter';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useFormik } from "formik";
-import { isCollectionExisted } from 'src/state/collection';
-import { hasArtistRole } from 'src/state/collection';
-
+import { uploadBtfs, uploadMetadata } from 'src/state/util';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import loadContract from 'src/state/hub/thunks/loadContract';
+import checkArtist from 'src/state/profile/thunks/checkArtist';
+import { noneAddress } from 'src/state/chain/config';
+import { createNftContract } from 'src/state/util';
 export default function CollectionImport() {
-    const { state, dispatch } = useContext(appStore);
-    const { mounted, wallet: { connected, signer: { _address }, info }, collectionContract } = state;
+    const dispatch = useDispatch();
+    const { account } = useSelector(state => state.chain);
+    const { signer, contract, loaded } = useSelector(state => state.hub);
+    const { isArtist } = useSelector(state => state.profile);
+
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [canSubmit, setCanSubmit] = useState(false);
@@ -62,13 +68,18 @@ export default function CollectionImport() {
     const checkCollection = async () => {
         let isExisted = false;
         if (selectedAddress) {
-            isExisted = await dispatch(isCollectionExisted(selectedAddress));
+            const collectionData = await contract.getCollectionByAddress(selectedAddress);
+            console.log(collectionData)
+            if (collectionData.cid == 0) {
+                isExisted = selectedAddress === collectionData.contractAddress;
+            } else {
+                isExisted = collectionData.contractAddress == noneAddress ? false : true;
+            }
         }
         if (!isExisted) {
-
             const nftContract = createNftContract(selectedAddress);
             let contractOwner = await nftContract.owner();
-            if (contractOwner == _address) {
+            if (contractOwner.toLowerCase() == account) {
                 toast({
                     title: "Collection can import",
                     status: 'success',
@@ -99,9 +110,8 @@ export default function CollectionImport() {
     }
 
     const importCollection = async (values) => {
-        setIsLoading(true);
-        const isArtist = await dispatch(hasArtistRole(_address));
-        if (isArtist) {
+        if (isArtist === 2) {
+            setIsLoading(true);
             let [uploadedLogo, uploadedBanner] = await Promise.all([
                 editLogo ? uploadBtfs(logo) : () => { },
                 editBanner ? uploadBtfs(banner) : () => { }
@@ -113,42 +123,18 @@ export default function CollectionImport() {
                 values.banner = uploadedBanner;
             }
             let metaHash = await uploadMetadata(values);
-            if (collectionContract.loaded) {
-                const fee = await collectionContract.obj.getCreateFee();
-                await collectionContract.obj.listCollection(
-                    selectedAddress,
-                    metaHash,
-                    { value: fee }
-                );
-                collectionContract.obj.once("CollectionCreated", async (cid, owner, nftAddress, metadata, event) => {
-                    toast({
-                        title: "Create collection success",
-                        status: 'success',
-                        duration: 3000,
-                        isClosable: true,
-                    });
-                    collectionContract.obj.removeAllListeners("CollectionCreated");
-                    setIsLoading(false);
-                    router.push(`/collection/edit/${cid.toString()}`);
-                });
-                await addInteractCollection(_address, selectedAddress, info.interact_collections);
-
-                toast({
-                    title: "Create success, you will be redirected after 10s",
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                });
-
-                await changeRoute();
-            } else {
-                toast({
-                    title: "Import failed",
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                });
-            }
+            const fee = await contract.getCreateFee();
+            let importReq = await signer.listCollection(selectedAddress, metaHash, { value: fee });
+            let importRes = await importReq.wait();
+            let importEvents = importRes.events;
+            toast({
+                title: "Create collection success",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+            setIsLoading(false);
+            router.push(`/collection/edit/${importEvents[importEvents.length - 1].args[0].toString()}`);
         } else {
             toast({
                 title: "Please register as artist on profile page",
@@ -160,14 +146,16 @@ export default function CollectionImport() {
         setIsLoading(false);
     }
 
-    const changeRoute = async () => {
-        const cCount = await collectionContract.obj.totalCollections();
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        router.push(`/collection/edit/${cCount}`);
-    }
+    useEffect(() => {
+        if (!loaded) {
+            dispatch(loadContract());
+        } else {
+            dispatch(checkArtist());
+        }
+    }, [loaded])
 
-    if (!mounted || isLoading) return <Skeleton h={'80vh'} />
-    if (!connected) return <NotConnected />
+    if (!loaded) return <Skeleton h={'80vh'} />
+    if (!account) return <NotConnected />
 
     return (
         <Grid bg="gray.100" p={20} templateColumns='repeat(3, 1fr)' gap={12}>

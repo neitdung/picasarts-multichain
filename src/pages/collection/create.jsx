@@ -8,24 +8,28 @@ import {
     useToast
 } from "@chakra-ui/react";
 import { useRouter } from 'next/router';
-import { appStore, uploadBtfs, uploadMetadata } from 'src/state/app';
 import NotConnected from 'src/components/common/NotConnected';
 import CollectionCard from 'src/components/collection/Card';
 import CollectionForm from 'src/components/collection/Form';
-import { hasArtistRole } from 'src/state/collection';
-import { ethers } from 'ethers';
-import { hubAddress } from 'src/config/contractAddress';
+import { uploadBtfs, uploadMetadata } from 'src/state/util';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import loadContract from 'src/state/hub/thunks/loadContract';
+import checkArtist from 'src/state/profile/thunks/checkArtist';
 
 export default function CollectionCreate() {
-    const { state, dispatch } = useContext(appStore);
-    const { mounted, wallet: { connected, signer }, collectionContract } = state;
+    const dispatch = useDispatch();
+    const { account } = useSelector(state => state.chain);
+    const { signer, contract, loaded } = useSelector(state => state.hub);
+    const { isArtist } = useSelector(state => state.profile);
+
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [logo, setLogo] = useState('');
     const [banner, setBanner] = useState('');
     const [editLogo, setEditLogo] = useState(false);
     const [editBanner, setEditBanner] = useState(false);
-
+    // const [listHash, setListHash] = useState([]);
     const initialValues = {
         name: '',
         symbol: '',
@@ -39,71 +43,50 @@ export default function CollectionCreate() {
     }
 
     const toast = useToast();
-
+    // const uploadHash = async (data) => {
+    //     let path = await uploadBtfs(data);
+    //     setListHash(current => [...current, path]);
+    // }
+    // useEffect(() => {
+    //     if (logo) {
+    //         uploadHash(logo);
+    //     }
+    // }, [logo])
+    // useEffect(() => {
+    //     if (listHash) {
+    //         console.log("Push new: ",listHash.length);
+    //         console.log(listHash);
+    //     }
+    // }, [listHash])
     const createCollection = async (values) => {
         setIsLoading(true);
-        const isArtist = await dispatch(hasArtistRole(signer._address));
-        if (isArtist) {
-            let [uploadedLogo, uploadedBanner] = await Promise.all([
-                editLogo ? uploadBtfs(logo) : () => { },
-                editBanner ? uploadBtfs(banner) : () => { }
-            ]);
-            if (editLogo) {
-                values.logo = uploadedLogo;
-            }
-            if (editBanner) {
-                values.banner = uploadedBanner;
-            }
-            let metaHash = await uploadMetadata(values);
-            if (collectionContract.loaded) {
-                const fee = await collectionContract.web3Obj.methods.getCreateFee().call();
-                const transactionParameters = [
-                    {
-                        from: signer._address,
-                        to: hubAddress,
-                        value: fee,
-                        data: collectionContract.web3Obj.methods.createCollection(
-                            values.name,
-                            values.symbol,
-                            metaHash
-                        ).encodeABI()
-                    }];
-                // popup - request the user to sign and broadcast the transaction
-                // @ts-ignore
-                await window.ethereum.request({
-                    method: 'eth_sendTransaction',
-                    params: transactionParameters,
-                });
-                let emitter = collectionContract.web3Obj.events.CollectionCreated(() => { }).on('data', async (event) => {
-                    console.group('New event received');
-                    console.log('- Event Name:', event.event);
-                    console.log('- Transaction:', event.transactionHash);
-                    console.log('- Block number:', event.blockNumber);
-                    console.groupEnd();
-                    toast({
-                        title: "Create collection success",
-                        status: 'success',
-                        duration: 3000,
-                        isClosable: true,
-                    });
-                    setIsLoading(false);
-                    router.push(`/collection/edit/${event.returnValues.cid}`);
-                    emitter.removeAllListeners('data');
-                }).on("error", (error, receipt) => {
-                    toast({
-                        title: "Create failed",
-                        status: 'error',
-                        duration: 3000,
-                        isClosable: true,
-                    });
-                })
-            } else {
+        if (isArtist === 2) {
+            try {
+                let [uploadedLogo, uploadedBanner] = await Promise.all([
+                    editLogo ? uploadBtfs(logo) : () => { },
+                    editBanner ? uploadBtfs(banner) : () => { }
+                ]);
+                if (editLogo) {
+                    values.logo = uploadedLogo;
+                }
+                if (editBanner) {
+                    values.banner = uploadedBanner;
+                }
+                let metaHash = await uploadMetadata(values);
+                let fee = await contract.CREATE_FEE();
+                let createReq = await signer.createCollection(values.name, values.symbol, metaHash, {value: fee});
+                let createRes = await createReq.wait();
+                let createEvents = createRes.events;
+                router.push(`/collection/edit/${createEvents[createEvents.length -1].args[0].toString()}`);
+            } catch (e) {
+                console.log(e)
                 toast({
-                    title: "Create failed",
+                    title: "Error: " + e.message,
                     status: 'error',
                     duration: 3000,
                     isClosable: true,
                 });
+                setIsLoading(false);
             }
         } else {
             toast({
@@ -116,8 +99,16 @@ export default function CollectionCreate() {
         setIsLoading(false);
     }
 
-    if (!mounted) return <Skeleton h={'80vh'} />
-    if (!connected) return <NotConnected />
+    useEffect(() => {
+        if (!loaded) {
+            dispatch(loadContract());
+        } else {
+            dispatch(checkArtist());
+        }
+    }, [loaded])
+
+    if (!loaded) return <Skeleton h={'80vh'} />
+    if (!account) return <NotConnected />
 
     return (
         <Grid bg="gray.100" p={20} templateColumns='repeat(3, 1fr)' gap={12}>
@@ -127,7 +118,8 @@ export default function CollectionCreate() {
             </GridItem>
             <GridItem colSpan={2} >
                 <CollectionForm
-                    // isLoading={isLoading}
+                    isArtist={isArtist}
+                    isLoading={false}
                     values={initialValues}
                     onSubmit={createCollection}
                     logo={logo}
