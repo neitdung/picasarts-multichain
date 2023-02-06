@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import WalletIcon from 'src/components/icons/Wallet';
 import { disconnectNetwork, setIsConnecting, handleEthereumAccountChange } from 'src/state/chain/slice';
 import NavItem from './NavItem';
-import loadContract from 'src/state/hub/thunks/loadContract';
+import loadTokens from 'src/state/chain/thunks/loadTokens';
 
 const USER_ITEMS = [
     {
@@ -68,6 +68,11 @@ export default function Network() {
         }
     }, []);
 
+    useEffect(() => {
+        if (selectedChain && window.ethereum) {
+            dispatch(loadTokens());
+        }
+    }, [selectedChain]);
     useEffect(() => {
         // Check metamask account is disconnected
         if (window.ethereum) {

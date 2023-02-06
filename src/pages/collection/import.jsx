@@ -134,6 +134,7 @@ export default function CollectionImport() {
                 isClosable: true,
             });
             setIsLoading(false);
+            console.log(importRes.events)
             router.push(`/collection/edit/${importEvents[importEvents.length - 1].args[0].toString()}`);
         } else {
             toast({

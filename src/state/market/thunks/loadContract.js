@@ -11,11 +11,11 @@ const loadContract = createAsyncThunk("market/contract", async (_payload, { getS
         const contract = new ethers.Contract(marketAddress, Marketplace.abi, signer);
         return { contract: contract, isSigner: true }
     } else if (state.chain.selectedChain) {
-        const provider = new ethers.providers.WebSocketProvider(config[selectedChain].wssAddress);
+        const provider = new ethers.providers.JsonRpcProvider(config[selectedChain].rpcAddress);
         const contract = new ethers.Contract(marketAddress, Marketplace.abi, provider);
         return { contract: contract, isSigner: false }
     } else {
-        const provider = new ethers.providers.WebSocketProvider(config.calamus.wssAddress);
+        const provider = new ethers.providers.JsonRpcProvider(config.calamus.rpcAddress);
         const contract = new ethers.Contract(marketAddress, Marketplace.abi, provider);
         return { contract: contract, isSigner: false }
     }

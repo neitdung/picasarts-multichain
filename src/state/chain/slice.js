@@ -1,10 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { noneAddress } from "./config";
 import connectToWallet from "./thunks/connectWallet";
-import { ethers } from "ethers";
+
+import loadTokens from "./thunks/loadTokens";
 const initialState = {
     isConnecting: false,
     selectedChain: "",
     availableChains: ["calamus", "picasart"],
+    tokens: {
+        loaded: false,
+        list: [],
+        obj: {
+            "0x0000000000000000000000000000000000000000": {
+                name: "ETH",
+                symbol: "ETH",
+                decimal: 18,
+                logo: "/eth.png",
+                address: noneAddress
+            }
+        }
+    },
     account: "",
     web3Loaded: false,
     infoLoaded: false,
@@ -43,6 +58,17 @@ export const slice = createSlice({
             }
             state.account = action.payload.account;
             state.selectedChain = action.payload.chain;
+        })
+        builder.addCase(loadTokens.fulfilled, (state, action) => {
+            state.tokens.loaded = true;
+            if (action.payload.error) {
+                state.tokens.list = [];
+                state.tokens.obj = {};
+                console.log("Load tokens error: ", action.payload.message)
+            } else {
+                state.tokens.list = action.payload.list;
+                state.tokens.obj = action.payload.obj;
+            }
         })
     }
 })

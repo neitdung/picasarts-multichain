@@ -32,7 +32,6 @@ export default function TokenHandle() {
 
     const loadTokens = async () => {
         let tokens = await marketContract.getAcceptTokens();
-        console.log(tokens)
         let convertedTokens = [];
         let namePromises = [];
         let symbolPromises = [];

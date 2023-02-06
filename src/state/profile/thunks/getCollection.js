@@ -9,7 +9,7 @@ const getUserCollection = createAsyncThunk("profile/collection", async (payload 
     let account = state.chain.account;
     if (account && selectedChain && collections.length) {
         let promises = [];
-        const provider = new ethers.providers.WebSocketProvider(config[selectedChain].wssAddress);
+        const provider = new ethers.providers.JsonRpcProvider(config[selectedChain].rpcAddress);
         for (let i = 0; i < collections.length; i++) {
             const nftContract = new ethers.Contract(collections[i].contractAddress, PNFT.abi, provider);
             promises.push(nftContract.balanceOf(account));

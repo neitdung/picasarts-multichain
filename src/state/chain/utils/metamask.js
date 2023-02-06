@@ -19,7 +19,7 @@ const addChainToMetamask = async (chain) => {
                     chainId: Web3.utils.toHex(chainSettings.chainId),
                     chainName: chainSettings.name,
                     rpcUrls: [chainSettings.rpcAddress] /* ... */,
-                    nativeCurrency: chainSettings.nativeCurrency,
+                    nativeToken: chainSettings.nativeToken,
                     blockExplorerUrls: [chainSettings.blockchainExplorer]
                 },
             ],

@@ -91,7 +91,7 @@ export default function BaseFee() {
                         <Input value={editCreateFee} onChange={e => setEditCreateFee(e.target.value)} />
                         <InputRightAddon p={0}><Button colorScheme='red' onClick={handleCreateFee} borderLeftRadius={0} w='full'>UPDATE</Button></InputRightAddon>
                     </InputGroup>
-                    <FormHelperText>Current create fee is: {createFee} {selectedChain && config[selectedChain].nativeCurrency.symbol}</FormHelperText>
+                    <FormHelperText>Current create fee is: {createFee} {selectedChain && config[selectedChain].nativeToken.symbol}</FormHelperText>
                 </FormControl>
                 <FormControl>
                     <FormLabel>RATE_FEE</FormLabel>

@@ -17,10 +17,12 @@ export const config = {
         chainId: 1337,
         blockchainExplorer: "http://localhost:8545",
         name: "Calamus chain",
-        nativeCurrency: {
+        nativeToken: {
             name: "ETH",
             symbol: "ETH",
-            decimals: 18
+            logo: "/eth.png",
+            decimals: 18,
+            address: noneAddress
         },
         hubAddress: hubAddress,
         loanAddress: loanAddress,
@@ -34,9 +36,11 @@ export const config = {
         chainId: 5,
         blockchainExplorer: "https://goerli.etherscan.io",
         name: "Goerli chain",
-        nativeCurrency: {
+        nativeToken: {
             name: "ETH",
             symbol: "ETH",
+            logo: "/eth.png",
+            address: noneAddress,
             decimals: 18
         },
         hubAddress: hubAddress,

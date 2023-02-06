@@ -10,7 +10,6 @@ import {
 import NotConnected from 'src/components/common/NotConnected';
 import CollectionCard from 'src/components/collection/Card';
 import CollectionForm from 'src/components/collection/Form';
-import { useRouter } from 'next/router';
 import { uploadBtfs, uploadMetadata } from 'src/state/util';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/hub/thunks/loadContract';
