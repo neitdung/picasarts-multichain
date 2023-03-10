@@ -8,7 +8,7 @@ const handler = async (req, res) => {
             if (req.query.address) {
                 let artists = await ArtistRequest.findOne({
                     chain: req.query.chain,
-                    address: req.query.address
+                    address: { '$regex': req.query.address, $options: 'i' }
                 }).populate('user');
                 return res.status(200).send({ error: false, result: artists });
             } else {

@@ -1,12 +1,12 @@
 import configFile from "src/state/config.json";
 
-export const hubAddress = configFile.hub
-export const marketAddress = configFile.market
-export const loanAddress = configFile.loan
-export const rentalAddress = configFile.rental
-export const daiAddress = configFile.dai
-export const usdcAddress = configFile.usdc
-export const usdtAddress = configFile.usdt
+export const hubAddress = configFile.hub.toLowerCase()
+export const marketAddress = configFile.market.toLowerCase()
+export const loanAddress = configFile.loan.toLowerCase()
+export const rentalAddress = configFile.rental.toLowerCase()
+export const daiAddress = configFile.dai.toLowerCase()
+export const usdcAddress = configFile.usdc.toLowerCase()
+export const usdtAddress = configFile.usdt.toLowerCase()
 export const noneAddress = "0x0000000000000000000000000000000000000000"
 
 export const config = {

@@ -5,7 +5,7 @@ const handler = async (req, res) => {
     if (req.method === 'GET') {
         try {
             let user = await User.findOne({
-                address: req.query.address
+                address: { '$regex': req.query.address, $options: 'i' }
             });
             if (user) {
                 return res.status(200).send({error: false, data: user});

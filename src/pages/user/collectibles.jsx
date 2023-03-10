@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Box,
     Link,
@@ -20,18 +20,26 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import FacebookIcon from 'src/components/icons/Facebook';
 import InstagramIcon from 'src/components/icons/Instagram';
 import TwitterIcon from 'src/components/icons/Twitter';
-import { appStore } from 'src/state/app';
 import NotConnected from 'src/components/common/NotConnected';
 import CollectionList from 'src/components/collection/List';
 import MyNfts from './my-nfts';
-import LoanList from 'src/components/loan/List';
-import MarketList from 'src/components/market/List';
+// import LoanList from 'src/components/loan/List';
+// import MarketList from 'src/components/market/List';
+import { useDispatch, useSelector } from 'react-redux';
+import getProfile from 'src/state/profile/thunks/getProfile';
 
 export default function Collectibles() {
-    const { state } = useContext(appStore);
-    const { mounted, wallet: { info, signer: {_address}, connected } } = state;
-    if (!mounted || !info.loaded) return <Skeleton h={'80vh'} />
-    if (!connected) return <NotConnected />
+    const dispatch = useDispatch();
+    const { account } = useSelector(state => state.chain);
+    const { data, isConnecting} = useSelector(state => state.profile);
+
+    useEffect(() => {
+        if (!data.loaded) {
+            dispatch(getProfile())
+        }
+    }, [data])
+    if (isConnecting || !data.loaded) return <Skeleton h={'80vh'} />
+    if (!account) return <NotConnected />
 
     return (
         <Box>
@@ -39,14 +47,14 @@ export default function Collectibles() {
                 h={300}
                 w={'full'}
                 src={
-                    info.banner ? `http://127.0.0.1:8080/btfs/${info.banner}` : 'https://picsum.photos/2000/200'
+                    data.banner ? `http://127.0.0.1:8080/btfs/${data.banner}` : 'https://picsum.photos/2000/200'
                 }
                 objectFit={'cover'}
             />
             <Flex justify={'center'} mt={-20}>
                 <Avatar
                     src={
-                        info.avatar ? `http://127.0.0.1:8080/btfs/${info.avatar}` : 'https://picsum.photos/200/200'
+                        data.avatar ? `http://127.0.0.1:8080/btfs/${data.avatar}` : 'https://picsum.photos/200/200'
                     }
                     size={'2xl'}
                     alt={'Creator'}
@@ -56,15 +64,15 @@ export default function Collectibles() {
                 />
             </Flex>
             <VStack py={2}>
-                <Text fontSize={'xl'} fontWeight={700}>{info.name}</Text>
+                <Text fontSize={'xl'} fontWeight={700}>{data.name}</Text>
                 <HStack gap={12} fontSize={'xl'}>
-                    <Link href={info.facebook ? info.facebook : "#"} color={'blue.500'}><FacebookIcon /></Link>
-                    <Link href={info.instagram ? info.instagram : "#"} color={'pink.400'}><InstagramIcon /></Link>
-                    <Link href={info.twitter ? info.twitter : "#"} color={'blue.500'}><TwitterIcon /></Link>
-                    <Link href={info.website ? info.website : "#"} color={'pink.400'}><ExternalLinkIcon /></Link>
+                    <Link href={data.facebook ? data.facebook : "#"} color={'blue.500'}><FacebookIcon /></Link>
+                    <Link href={data.instagram ? data.instagram : "#"} color={'pink.400'}><InstagramIcon /></Link>
+                    <Link href={data.twitter ? data.twitter : "#"} color={'blue.500'}><TwitterIcon /></Link>
+                    <Link href={data.website ? data.website : "#"} color={'pink.400'}><ExternalLinkIcon /></Link>
                 </HStack>
-                <Text border={'1px solid'} px={2} py={1} borderColor={'gray.200'} color={'gray.500'} borderRadius={20}>{_address}</Text>
-                <Text>{info.bio}</Text>
+                <Text border={'1px solid'} px={2} py={1} borderColor={'gray.200'} color={'gray.500'} borderRadius={20}>{account}</Text>
+                <Text>{data.bio}</Text>
             </VStack>
             <Box px={{ base: 4, md: 20 }} my={4}>
                 <Tabs isFitted variant={'enclosed'} borderWidth={2}>
@@ -76,16 +84,16 @@ export default function Collectibles() {
                     </TabList>
                     <TabPanels>
                         <TabPanel>
-                            <MyNfts />
+                            <MyNfts columns={4} />
                         </TabPanel>
                         <TabPanel>
-                            <CollectionList address={_address} limit={3} />
+                            <CollectionList address={account} limit={3} />
                         </TabPanel>
                         <TabPanel>
-                            <MarketList address={_address} />
+                            {/* <MarketList address={_address} /> */}
                         </TabPanel>
                         <TabPanel>
-                            <LoanList address={_address} />
+                            {/* <LoanList address={_address} /> */}
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

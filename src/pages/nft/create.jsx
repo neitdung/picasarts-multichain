@@ -16,7 +16,11 @@ import { noneAddress } from 'src/state/chain/config';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/hub/thunks/loadContract';
 import getProfile from 'src/state/profile/thunks/getProfile';
+import { uploadBtfs, uploadMetadata, createNftContractWithSigner } from 'src/state/util';
+import { useRouter } from 'next/router';
+
 export default function NFTCreate() {
+    const router = useRouter();
     const dispatch = useDispatch();
     const account = useSelector(state => state.chain.account);
     const tokens = useSelector(state => state.chain.tokens);
@@ -49,85 +53,39 @@ export default function NFTCreate() {
         } else {
             contractSelected = values.contract_address;
         }
-        // const metadata = await saveNFTToIpfs(contractSelected, values);
-        // await saveNFTToContract(contractSelected, metadata, values);
+        const metadata = await saveNFTToBtfs(contractSelected, values);
+        await saveNFTToContract(contractSelected, metadata, values);
     }
 
-    // const saveNFTToIpfs = async (contractSelected, values) => {
-    //     const nftForm = new FormData();
-    //     nftForm.append('contract_address', contractSelected);
-    //     nftForm.append('name', values.name);
-    //     nftForm.append('description', values.description);
-    //     nftForm.append('external_url', values.external_url);
-    //     nftForm.append('royalty', values.royalty);
-    //     nftForm.append('background_color', bg);
-    //     nftForm.append('creator_name', info.name);
-    //     nftForm.append('creator_address', signer._address);
-    //     nftForm.append('media', image);
-    //     nftForm.append('attributes', JSON.stringify(values.attributes));
-    //     const options = {
-    //         method: 'POST',
-    //         body: nftForm
-    //     };
-    //     let result = await fetch("/api/nft/metadata", options);
-    //     let resultJson = await result.json();
-    //     return resultJson;
-    // }
+    const saveNFTToBtfs = async (contractSelected, values) => {
+        const imageHash = await uploadBtfs(image);
+        const metadataHash = await uploadMetadata({ ...values, contract_address: contractSelected, background_color: bg, creator_address: account, image: imageHash })
+        return metadataHash;
+    }
 
-    // const saveNFTToContract = async (contractSelected, metadata, values) => {
-    //     try {
-    //         const nftContract = createNftContractWithSigner(contractSelected);
-    //         await nftContract.safeMint(
-    //             signer._address,
-    //             metadata.url,
-    //             parseInt(values.royalty * 100)
-    //         );
-
-    //         nftContract.once("Transfer", async (from, to, tokenId, event) => {
-    //             await saveNFTToDB(contractSelected, tokenId.toString(), values, metadata);
-    //             setIsLoading(false);
-    //             toast({
-    //                 title: "Create success",
-    //                 status: 'success',
-    //                 duration: 3000,
-    //                 isClosable: true,
-    //             });
-    //             nftContract.removeAllListeners("Transfer");
-    //         })
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
-
-    // const saveNFTToDB = async (contractSelected, tokenId, values, metadata) => {
-    //     await new Promise(resolve => setTimeout(resolve, 2000));
-    //     let metaFetch = await fetch(`http://127.0.0.1:8080/btfs/${metadata.ipnft}/metadata.json`);
-    //     const { image } = await metaFetch.json();
-    //     const options = {
-    //         method: 'POST',
-    //         headers: {
-    //             "content-type": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    //             name: values.name,
-    //             description: values.description,
-    //             background_color: bg,
-    //             external_url: values.external_url,
-    //             royalty: parseInt(values.royalty * 100),
-    //             attributes: values.attributes,
-    //             token_id: tokenId,
-    //             creator_address: signer._address,
-    //             creator_name: info.name,
-    //             contract_address: contractSelected,
-    //             ipnft: metadata.ipnft,
-    //             image: image
-    //         })
-    //     };
-    //     await addInteractCollection(signer._address, contractSelected, info.interact_collections);
-    //     let result = await fetch("/api/nft/create", options);
-    //     let resultJson = await result.json();
-    //     console.log(resultJson);
-    // }
+    const saveNFTToContract = async (contractSelected, metadata, values) => {
+        try {
+            const nftContract = createNftContractWithSigner(contractSelected);
+            let tx = await nftContract.safeMint(
+                account,
+                metadata,
+                parseInt(values.royalty * 100)
+            );
+            let createResults = await tx.wait();
+            toast({
+                title: "Create success",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+            let createEvents = createResults.events;
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            router.push(`/nft/${contractSelected}@${createEvents[createEvents.length - 1].args.tokenId.toString()}/list`);
+            setIsLoading(false);
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     const loadCollections = async () => {
         let listCollections = await contract.getCollectionsByOwner(account);
@@ -183,7 +141,7 @@ export default function NFTCreate() {
                     image={image}
                     bg={bg}
                     editImage={editImage}
-                    tokenInfo={tokens.loaded ? tokens.obj[noneAddress]: {}} 
+                    tokenInfo={tokens.loaded ? tokens.obj[noneAddress] : {}}
                 />
             </GridItem>
         </Grid>

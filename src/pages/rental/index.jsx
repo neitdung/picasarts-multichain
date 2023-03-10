@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from "react";
+import React, { useState } from "react";
 import {
     Box,
     Flex,
@@ -23,28 +23,29 @@ import {
     AccordionIcon,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import MarketList from "src/components/market/List";
+import RentalList from "src/components/rental/List";
+import { useSelector } from "react-redux";
 const sortByActions = [
     { label: "Newest" },
     { label: "Latest" },
     { label: "Name A to Z" },
     { label: "Name A to Z" },
-    { label: "Price low to high" },
-    { label: "Price high to low" }
+    { label: "ROS low to high" },
+    { label: "ROS high to low" }
 ];
 
-export default function Market() {
+export default function Rental() {
     const [sortBy, setSortBy] = useState(0);
-
+    const { list: tokenList } = useSelector(state => state.chain.tokens);
     return (
         <Box w={'full'} px={20} py={2}>
             <Box p={10}>
-                <Center><Text fontSize={'2xl'} fontWeight={'bold'}>Marketplace</Text></Center>
+                <Center><Text fontSize={'2xl'} fontWeight={'bold'}>Rental Covenants</Text></Center>
             </Box>
             <Flex w={'full'} justify={'space-between'}>
                 <Text fontWeight={'bold'}>Filter</Text>
                 <Menu>
-                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />} colorScheme='teal'>
                         Sort By: {sortByActions[sortBy].label}
                     </MenuButton>
                     <MenuList>
@@ -60,16 +61,17 @@ export default function Market() {
                         <h2>
                             <AccordionButton>
                                 <Box flex='1' textAlign='left' >
-                                    Type
+                                    Status
                                 </Box>
                                 <AccordionIcon />
                             </AccordionButton>
                         </h2>
-                        <AccordionPanel  py={2} bg={'gray.100'}>
+                        <AccordionPanel py={2} bg={'gray.100'}>
                             <CheckboxGroup colorScheme='pink'>
                                 <Stack spacing={[1, 2]}>
-                                    <Checkbox value='purchase'>Purchase</Checkbox>
-                                    <Checkbox value='auction'>Auction</Checkbox>
+                                    <Checkbox value='listing'>Listing</Checkbox>
+                                    <Checkbox value='locked'>Locked</Checkbox>
+                                    <Checkbox value='ended'>Ended</Checkbox>
                                 </Stack>
                             </CheckboxGroup>
                         </AccordionPanel>
@@ -78,15 +80,15 @@ export default function Market() {
                         <h2>
                             <AccordionButton>
                                 <Box flex='1' textAlign='left' >
-                                    Price
+                                    ROS
                                 </Box>
                                 <AccordionIcon />
                             </AccordionButton>
                         </h2>
-                        <AccordionPanel  py={2} bg={'gray.100'}>
-                            <RangeSlider aria-label={['min', 'max']} min={0} max={2000} defaultValue={[0, 2000]}>
+                        <AccordionPanel py={2} bg={'gray.100'} px={4}>
+                            <RangeSlider aria-label={['min', 'max']} min={0} max={100} defaultValue={[0, 100]}>
                                 <RangeSliderTrack bg='pink.200'>
-                                    <RangeSliderFilledTrack bg='purple.500'/>
+                                    <RangeSliderFilledTrack bg='purple.500' />
                                 </RangeSliderTrack>
                                 <RangeSliderThumb index={0} />
                                 <RangeSliderThumb index={1} />
@@ -97,24 +99,23 @@ export default function Market() {
                         <h2>
                             <AccordionButton>
                                 <Box flex='1' textAlign='left' >
-                                    Category
+                                    Token
                                 </Box>
                                 <AccordionIcon />
                             </AccordionButton>
                         </h2>
-                        <AccordionPanel  py={2} bg={'gray.100'}>
+                        <AccordionPanel py={2} bg={'gray.100'}>
                             <CheckboxGroup colorScheme='pink'>
                                 <Stack spacing={[1, 2]}>
-                                    <Checkbox value='image'>Image</Checkbox>
-                                    <Checkbox value='gif'>Gif</Checkbox>
-                                    <Checkbox value='audio'>Audio</Checkbox>
-                                    <Checkbox value='video'>Video</Checkbox>
+                                    {(tokenList.length) && tokenList.map(item => 
+                                        <Checkbox value={item.address}>{item.symbol}</Checkbox>
+                                        )}
                                 </Stack>
                             </CheckboxGroup>
                         </AccordionPanel>
                     </AccordionItem>
                 </Accordion>
-                <MarketList columns={3} />
+                <RentalList columns={3}/>
             </Flex>
         </Box>
     );

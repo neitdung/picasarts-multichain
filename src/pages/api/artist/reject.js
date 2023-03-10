@@ -6,7 +6,7 @@ const handler = async (req, res) => {
         try {
             let doc = await ArtistRequest.findOneAndDelete({
                 chain: req.body.chain,
-                address: req.body.address
+                address: req.body.address.toLowerCase()
             });
             return res.status(200).send({ error: false, result: doc });
         } catch (error) {

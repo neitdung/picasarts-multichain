@@ -9,7 +9,15 @@ const initialState = {
     availableChains: ["calamus", "picasart"],
     tokens: {
         loaded: false,
-        list: [],
+        list: [
+            {
+                name: "ETH",
+                symbol: "ETH",
+                decimal: 18,
+                logo: "/eth.png",
+                address: noneAddress
+            }
+        ],
         obj: {
             "0x0000000000000000000000000000000000000000": {
                 name: "ETH",

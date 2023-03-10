@@ -135,27 +135,21 @@ export default function AppBar() {
                         </InputLeftAddon>
                         <Input htmlSize={30} placeholder='Enter your search here...' />
                     </InputGroup>
-                    <NextLink href='/create' passHref>
-                        <Link>
-                            <Button mx={4} variant={'solid'} colorScheme='pink'>
-                                Create
-                            </Button>
-                        </Link>
-                    </NextLink>
-                    <NextLink href='/import' passHref>
-                        <Link>
-                            <Button variant={'outline'} colorScheme='purple'>
-                                Import
-                            </Button>
-                        </Link>
-                    </NextLink>
-                    <NextLink href='/admin' passHref>
-                        <Link>
-                            <Button mx={4} variant={'outline'}>
-                                Admin
-                            </Button>
-                        </Link>
-                    </NextLink>
+                    <Link as={NextLink} href='/create'>
+                        <Button mx={4} variant={'solid'} colorScheme='pink'>
+                            Create
+                        </Button>
+                    </Link>
+                    <Link as={NextLink} href='/import'>
+                        <Button variant={'outline'} colorScheme='purple'>
+                            Import
+                        </Button>
+                    </Link>
+                    <Link as={NextLink} href='/admin'>
+                        <Button mx={4} variant={'outline'}>
+                            Admin
+                        </Button>
+                    </Link>
                 </Flex>
                 <Network />
             </Flex>
@@ -217,65 +211,63 @@ export default function AppBar() {
                     justify={'flex-end'}
                     direction={'row'}
                     spacing={6}>
-                    <NextLink href={'#'} passHref>
-                        <Link
-                            pr={2}
-                            py={2}
-                            href={'#'}
-                            fontSize={'md'}
-                            fontWeight={700}
-                            color={'blue.500'}
-                            _hover={{
-                                textDecoration: 'none',
-                                color: linkHoverColor,
-                            }}>
-                            <FacebookIcon />
-                        </Link>
-                    </NextLink>
-                    <NextLink href={'#'} passHref>
-                        <Link
-                            pr={2}
-                            py={2}
-                            href={'#'}
-                            fontSize={'md'}
-                            fontWeight={700}
-                            color={'pink.400'}
-                            _hover={{
-                                textDecoration: 'none',
-                                color: linkHoverColor,
-                            }}>
-                            <InstagramIcon />
-                        </Link>
-                    </NextLink>
-                    <NextLink href={'#'} passHref>
-                        <Link
-                            pr={2}
-                            py={2}
-                            href={'#'}
-                            fontSize={'md'}
-                            fontWeight={700}
-                            color={'blue.500'}
-                            _hover={{
-                                textDecoration: 'none',
-                                color: linkHoverColor,
-                            }}>
-                            <TwitterIcon />
-                        </Link>
-                    </NextLink>
-                    <NextLink href={'#'} passHref>
-                        <Link
-                            py={2}
-                            href={'#'}
-                            fontSize={'md'}
-                            fontWeight={700}
-                            color={'pink.400'}
-                            _hover={{
-                                textDecoration: 'none',
-                                color: linkHoverColor,
-                            }}>
-                            <LinkIcon />
-                        </Link>
-                    </NextLink>
+                    <Link
+                        as={NextLink}
+                        pr={2}
+                        py={2}
+                        href={'#'}
+                        fontSize={'md'}
+                        fontWeight={700}
+                        color={'blue.500'}
+                        _hover={{
+                            textDecoration: 'none',
+                            color: linkHoverColor,
+                        }}>
+                        <FacebookIcon />
+                    </Link>
+                    <Link
+                        as={NextLink}
+                        pr={2}
+                        py={2}
+                        href={'#'}
+                        fontSize={'md'}
+                        fontWeight={700}
+                        color={'pink.400'}
+                        _hover={{
+                            textDecoration: 'none',
+                            color: linkHoverColor,
+                        }}>
+                        <InstagramIcon />
+                    </Link>
+                    <Link
+                        as={NextLink}
+
+                        pr={2}
+                        py={2}
+                        href={'#'}
+                        fontSize={'md'}
+                        fontWeight={700}
+                        color={'blue.500'}
+                        _hover={{
+                            textDecoration: 'none',
+                            color: linkHoverColor,
+                        }}>
+                        <TwitterIcon />
+                    </Link>
+                    <Link
+                        as={NextLink}
+
+                        py={2}
+                        href={'#'}
+                        fontSize={'md'}
+                        fontWeight={700}
+                        color={'pink.400'}
+                        _hover={{
+                            textDecoration: 'none',
+                            color: linkHoverColor,
+                        }}>
+                        <LinkIcon />
+                    </Link>
                 </Stack>
             </Flex>
         </Box>

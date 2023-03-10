@@ -289,7 +289,7 @@ export default function LoanInfo({ id }) {
                                     </Link>
                                 </ListItem>
                                 <ListItem>
-                                    Duration: {loanData?.timeDays?.toNumber()} days
+                                    Duration: {loanData?.duration?.toNumber()} days
                                 </ListItem>
                             </UnorderedList>
                         </Box>

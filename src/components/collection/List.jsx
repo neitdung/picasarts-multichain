@@ -1,40 +1,47 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     SimpleGrid
 } from "@chakra-ui/react";
-import { appStore } from 'src/state/app';
 import CollectionCard from './Card';
+import { useSelector } from 'react-redux';
 
 export default function CollectionList({ address, limit }) {
-    const { state } = useContext(appStore);
-    const { collectionContract, wallet: { signer: { _address } }, mounted } = state;
+    const { account, selectedChain } = useSelector(state => state.chain);
     const [list, setList] = useState([]);
-    const canEdit = address == _address;
+    const canEdit = useMemo(() => address == account);
     const loadCollections = async () => {
         let listCollections = [];
         if (address) {
-            listCollections = await collectionContract.obj.getCollectionsByOwner(address);
+            let getReq = await fetch(`/api/collection/get-by-owner?chain=${selectedChain}&address=${address}`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            let getResJson = await getReq.json();
+            if (!getResJson.error) {
+                listCollections = getResJson.data;
+            }
         } else {
-            listCollections = await collectionContract.obj.getAllCollections();
+            let getReq = await fetch(`/api/collection/get-all?chain=${selectedChain}`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            let getResJson = await getReq.json();
+            if (!getResJson.error) {
+                listCollections = getResJson.data;
+            }
         }
-        if (limit) {
+        console.log(listCollections)
+        if (limit && listCollections.length) {
             listCollections = listCollections.slice(-limit);
         }
-        const metaFetch = [];
-        listCollections.forEach(item => {
-            metaFetch.push(fetch(`http://127.0.0.1:8080/btfs/${item.metadata}`, { headers: { "content-type": "application/json" } }));
-        });
-        let values = await Promise.all(metaFetch);
-        let newPromises = values.map(item => item.json());
-        let metaRes = await Promise.all(newPromises);
-        setList(metaRes.map((item, index) => ({ ...item, ...listCollections[index] })));
+        setList(listCollections);
     }
 
     useEffect(() => {
-        if (mounted && collectionContract.loaded && _address) {
-            loadCollections();
-        }
-    }, [mounted, collectionContract, _address]);
+        loadCollections()
+    }, [account]);
 
     return (
         <SimpleGrid columns={3} gap={4} justifyItems='center'>

@@ -29,7 +29,6 @@ export default function ArtistGranting() {
                 }
             });
             let waitingRes = await waitingList.json();
-            console.log(waitingRes)
             setListApproved(waitingRes.result.filter(fItem => fItem.approved));
             setListWaiting(waitingRes.result.filter(fItem => !fItem.approved));
         } catch (e) {
@@ -53,13 +52,7 @@ export default function ArtistGranting() {
                 address
             );
             await approveRequest.wait();
-            await fetch(`/api/artist/approve`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({chain: selectedChain, address: address})
-            });
+            await new Promise(resolve => setTimeout(resolve, 3000));
             loadList();
         } catch (e) {
             toast({
@@ -78,13 +71,7 @@ export default function ArtistGranting() {
                 address
             );
             await approveRequest.wait();
-            await fetch(`/api/artist/reject`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ chain: selectedChain, address: address })
-            });
+            await new Promise(resolve => setTimeout(resolve, 3000));
             loadList();
         } catch (e) {
             toast({

@@ -182,7 +182,7 @@ export default function FarmInfo({ id }) {
                                 {acceptTokens.map(item =>
                                     <WrapItem key={`accept${item.token_id}`}>
                                         <Flex w='180px' h='80px' borderColor={item.background_color} borderWidth='5px' align='center' gap={2} justify='space-between'>
-                                            <NextLink href={`/nft/${item.contract_address}/${item.token_id}/buy`} passHref>
+                                            <NextLink href={`/nft/${item.contract_address}@${item.token_id}`} passHref>
                                                 <Link>{item.name.length > 6 ? item.name.substring(0, 10) + "..." : item.name}</Link>
                                             </NextLink>
                                             <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
@@ -202,7 +202,7 @@ export default function FarmInfo({ id }) {
                                         <Flex w='220px' align='center'>
                                             <IconButton icon={<LockIcon />} onClick={() => deposit(item.token_id)} />
                                             <Flex w='180px' h='80px' borderColor={item.background_color} borderWidth='5px' align='center' gap={2} justify='space-between'>
-                                                <NextLink href={`/nft/${item.contract_address}/${item.token_id}/buy`} passHref>
+                                                <NextLink href={`/nft/${item.contract_address}@${item.token_id}`} passHref>
                                                     <Link>{item.name.length > 6 ? item.name.substring(0, 10) + "..." : item.name}</Link>
                                                 </NextLink>
                                                 <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} h={'full'} objectFit='cover' maxW={'90px'} />
@@ -225,7 +225,7 @@ export default function FarmInfo({ id }) {
                                             <Flex w='220px' align='center'>
                                                 <IconButton icon={<UnlockIcon />} onClick={() => withdraw(item.token_id)} />
                                                 <Flex w='180px' h='80px' borderColor={item.background_color} borderWidth='5px' align='center' gap={2} justify='space-between'>
-                                                    <NextLink href={`/nft/${item.contract_address}/${item.token_id}/buy`} passHref>
+                                                    <NextLink href={`/nft/${item.contract_address}@${item.token_id}`} passHref>
                                                         <Link>{item.name.length > 6 ? item.name.substring(0, 10) + "..." : item.name}</Link>
                                                     </NextLink>
                                                     <Image src={item.image.replace("ipfs://", "http://127.0.0.1:8080/btfs/")} h={'full'} objectFit='cover' maxW={'90px'} />

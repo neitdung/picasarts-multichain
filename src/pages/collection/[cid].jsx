@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Flex,
     SkeletonCircle,
@@ -13,18 +13,17 @@ import {
     SimpleGrid
 } from "@chakra-ui/react";
 
-import { appStore } from 'src/state/app';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import FacebookIcon from 'src/components/icons/Facebook';
 import InstagramIcon from 'src/components/icons/Instagram';
 import TwitterIcon from 'src/components/icons/Twitter';
 import NFTCard from 'src/components/nft/Card';
-import { getCollectionItems } from 'src/state/collection';
-import { addressNone } from 'src/config/contractAddress';
+import { noneAddress } from 'src/state/chain/config';
+import { useSelector } from 'react-redux';
 
 export default function CollectionCid({ cid }) {
-    const { state } = useContext(appStore);
-    const { mounted, collectionContract, tokenObj } = state;
+    const { selectedChain, tokens: { obj: tokenObj} } = useSelector(state => state.chain);
+
     const [list, setList] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -32,22 +31,32 @@ export default function CollectionCid({ cid }) {
 
     const loadCollection = async () => {
         setIsLoading(true);
-        let cData = await collectionContract.obj.getCollectionData(cid);
-        let cMetadata = await fetch(`http://127.0.0.1:8080/btfs/${cData.metadata}`);
-        let cMetadataRes = await cMetadata.json();
-        setInfo({ ...cData, ...cMetadataRes });
-        let nfts = await getCollectionItems(cData.contractAddress);
-        setList(nfts)
+        let getReq = await fetch(`/api/collection/get-by-id?chain=${selectedChain}&cid=${cid}`, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        let getResJson = await getReq.json();
+        if (!getResJson.error) {
+            setInfo(getResJson.data);
+            let nftReq = await fetch(`/api/nft/get-by-caddress?chain=${selectedChain}&address=${getResJson.data.contract_address}`, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            let nftRes = await nftReq.json();
+            if (!nftRes.error) {
+                setList(nftRes.data)
+            }
+        }
         setIsLoading(false);
     }
 
     useEffect(() => {
-        if (mounted && collectionContract.loaded) {
-            loadCollection();
-        }
-    }, [mounted, collectionContract]);
+        loadCollection()
+    }, []);
 
-    if (!mounted || isLoading) return <Box padding='6' boxShadow='lg' bg='white'>
+    if (isLoading) return <Box padding='6' boxShadow='lg' bg='white'>
         <SkeletonCircle size='30' />
         <SkeletonText mt='4' noOfLines={20} spacing='4' />
     </Box>;
@@ -87,7 +96,7 @@ export default function CollectionCid({ cid }) {
             </VStack>
             <SimpleGrid h={'min'} columns={4} gap={5} w={'full'} px={20}>
                 {list.map(item =>
-                    <NFTCard {...item} canEdit={false} tokenInfo={tokenObj[addressNone]} />
+                    <NFTCard {...item} canEdit={false} tokenInfo={tokenObj[noneAddress]} />
                 )}
             </SimpleGrid>
         </Box>

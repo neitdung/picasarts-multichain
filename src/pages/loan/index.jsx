@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import {
     Box,
     Flex,
@@ -23,8 +23,8 @@ import {
     AccordionIcon,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { appStore, getTokens } from "src/state/app";
 import LoanList from "src/components/loan/List";
+import { useSelector } from "react-redux";
 const sortByActions = [
     { label: "Newest" },
     { label: "Latest" },
@@ -35,20 +35,8 @@ const sortByActions = [
 ];
 
 export default function Loan() {
-    const { state, dispatch } = useContext(appStore);
     const [sortBy, setSortBy] = useState(0);
-    const {
-        mounted,
-        wallet: {signer: {_address}},
-        tokens
-    } = state;
-
-    // useEffect(() => {
-    //     if (mounted && _address) {
-    //         dispatch(getTokens());
-    //     }
-    // }, [mounted, _address])
-
+    const { list: tokenList } = useSelector(state => state.chain.tokens);
     return (
         <Box w={'full'} px={20} py={2}>
             <Box p={10}>
@@ -57,7 +45,7 @@ export default function Loan() {
             <Flex w={'full'} justify={'space-between'}>
                 <Text fontWeight={'bold'}>Filter</Text>
                 <Menu>
-                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />} colorScheme='pink'>
                         Sort By: {sortByActions[sortBy].label}
                     </MenuButton>
                     <MenuList>
@@ -119,15 +107,15 @@ export default function Loan() {
                         <AccordionPanel py={2} bg={'gray.100'}>
                             <CheckboxGroup colorScheme='pink'>
                                 <Stack spacing={[1, 2]}>
-                                    {(tokens.length) && tokens.map(item => 
-                                        <Checkbox value={item.tokenId}>{item.tokenAbbr}</Checkbox>
+                                    {(tokenList.length) && tokenList.map(item => 
+                                        <Checkbox value={item.address}>{item.symbol}</Checkbox>
                                         )}
                                 </Stack>
                             </CheckboxGroup>
                         </AccordionPanel>
                     </AccordionItem>
                 </Accordion>
-                <LoanList columns={4}/>
+                <LoanList columns={3}/>
             </Flex>
         </Box>
     );

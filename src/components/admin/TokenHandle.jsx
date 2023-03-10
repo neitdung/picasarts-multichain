@@ -15,51 +15,30 @@ import {
     Td,
     TableCaption,
     TableContainer,
-    Button
+    Button,
+    Image,
+    HStack,
+    Text
 } from '@chakra-ui/react';
 import { useDispatch, useSelector } from "react-redux";
-import { createFtContract } from "src/state/hub/utils/helper";
-import loadContract from "src/state/market/thunks/loadContract";
 import { CloseIcon, PlusSquareIcon } from "@chakra-ui/icons";
+import loadTokens from "src/state/chain/thunks/loadTokens";
+import { noneAddress } from "src/state/chain/config";
 
 export default function TokenHandle() {
     const dispatch = useDispatch();
     const { loaded, signer } = useSelector(state => state.hub);
-    const { contract: marketContract, loaded: marketLoaded } = useSelector(state => state.market);
-    const [listToken, setListToken] = useState([]);
+    const { tokens } = useSelector(state => state.chain);
+
     const [newToken, setNewToken] = useState('');
     const toast = useToast();
 
-    const loadTokens = async () => {
-        let tokens = await marketContract.getAcceptTokens();
-        let convertedTokens = [];
-        let namePromises = [];
-        let symbolPromises = [];
-        for (let i = 0; i < tokens.length; i++) {
-            let tokenContract = createFtContract(tokens[i]);
-            namePromises.push(tokenContract.name());
-            symbolPromises.push(tokenContract.symbol());
-        }
-        let nameTokens = await Promise.all(namePromises);
-        let symbolTokens = await Promise.all(symbolPromises);
-        for (let i = 0; i < tokens.length; i++) {
-            convertedTokens.push({
-                address: tokens[i],
-                name: nameTokens[i],
-                symbol: symbolTokens[i]
-            })
-        }
-        setListToken(convertedTokens);
-    }
-
     const handleRemoveToken = useCallback(async (index) => {
         try {
-            let handleReq = await signer.removeToken(listToken[index].address);
+            let handleReq = await signer.removeToken(tokens.list[index].address);
             await handleReq.wait();
-            let newList = [...listToken];
-            newList.splice(index, 1)
-            setListToken(newList);
-
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            dispatch(loadTokens());
             toast({
                 status: 'success',
                 title: "Transaction is confirmed",
@@ -72,22 +51,14 @@ export default function TokenHandle() {
                 duration: 3000
             })
         }
-    }, [listToken, signer, loaded])
+    }, [tokens, signer, loaded])
 
     const handleAddToken = useCallback(async () => {
         try {
             let handleReq = await signer.addAcceptToken(newToken);
             await handleReq.wait();
-            let tokenContract = createFtContract(newToken);
-            let name = await tokenContract.name();
-            let symbol = await tokenContract.symbol();
-            let newList = [...listToken];
-            newList.push({
-                address: newToken,
-                name,
-                symbol
-            });
-            setListToken(newList);
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            dispatch(loadTokens());
             toast({
                 status: 'success',
                 title: "Transaction is confirmed",
@@ -100,15 +71,7 @@ export default function TokenHandle() {
                 duration: 3000
             })
         }
-    }, [newToken, listToken, signer, loaded])
-
-    useEffect(() => {
-        if (!marketLoaded) {
-            dispatch(loadContract());
-        } else {
-            loadTokens()
-        }
-    }, [marketLoaded])
+    }, [newToken, signer, loaded])
 
     return (
         <Box w='full' py={4}>
@@ -136,12 +99,12 @@ export default function TokenHandle() {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {listToken.map((item, index) =>
+                            {tokens.list.map((item, index) =>
                                 <Tr>
                                     <Td>{item.address}</Td>
                                     <Td>{item.name}</Td>
-                                    <Td>{item.symbol}</Td>
-                                    <Td><Button colorScheme='red' leftIcon={<CloseIcon />} onClick={() => handleRemoveToken(index)}>Delete</Button></Td>
+                                    <Td><HStack><Image src={item.logo} h={'30px'} /><Text>{item.symbol}</Text></HStack></Td>
+                                    <Td><Button isDisabled={item.address === noneAddress} colorScheme='red' leftIcon={<CloseIcon />} onClick={() => handleRemoveToken(index)}>Delete</Button></Td>
                                 </Tr>
                             )}
                         </Tbody>

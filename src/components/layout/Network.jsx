@@ -33,7 +33,7 @@ const USER_ITEMS = [
 export default function Network() {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { isConnecting, selectedChain, account } = useSelector(state => state.chain);
+    const { isConnecting, selectedChain, account, tokens: {loaded} } = useSelector(state => state.chain);
 
     const handleConnectNetwork = useCallback(async (chain) => {
         dispatch(setIsConnecting(true));
@@ -69,10 +69,10 @@ export default function Network() {
     }, []);
 
     useEffect(() => {
-        if (selectedChain && window.ethereum) {
+        if (selectedChain || !loaded) {
             dispatch(loadTokens());
         }
-    }, [selectedChain]);
+    }, [selectedChain, loaded]);
     useEffect(() => {
         // Check metamask account is disconnected
         if (window.ethereum) {

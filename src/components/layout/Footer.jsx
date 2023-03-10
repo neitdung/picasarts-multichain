@@ -53,116 +53,83 @@ export default function Footer() {
                         justify={'flex-end'}
                         direction={'row'}
                         spacing={4}>
-                        <NextLink href={'#'} passHref>
-                            <Link pr={1}
-                                href={'#'}
-                                fontSize={'md'}
-                                fontWeight={700}
-                                color={'blue.500'}
-                                _hover={{
-                                    textDecoration: 'none',
-                                    color: linkHoverColor,
-                                }}>
-                                <FacebookIcon />
-                            </Link>
-                        </NextLink>                        <NextLink href={'#'} passHref>
-                            <Link pr={1}
-                                href={'#'}
-                                fontSize={'md'}
-                                fontWeight={700}
-                                color={'pink.400'}
-                                _hover={{
-                                    textDecoration: 'none',
-                                    color: linkHoverColor,
-                                }}>
-                                <InstagramIcon />
-                            </Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link pr={1}
-                                href={'#'}
-                                fontSize={'md'}
-                                fontWeight={700}
-                                color={'blue.500'}
-                                _hover={{
-                                    textDecoration: 'none',
-                                    color: linkHoverColor,
-                                }}>
-                                <TwitterIcon />
-                            </Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}
-                                fontSize={'md'}
-                                fontWeight={700}
-                                color={'pink.400'}
-                                _hover={{
-                                    textDecoration: 'none',
-                                    color: linkHoverColor,
-                                }}>
-                                <LinkIcon />
-                            </Link>
-                        </NextLink>
+                        <Link pr={1}
+                            as={NextLink}
+                            href={'#'}
+                            fontSize={'md'}
+                            fontWeight={700}
+                            color={'blue.500'}
+                            _hover={{
+                                textDecoration: 'none',
+                                color: linkHoverColor,
+                            }}>
+                            <FacebookIcon />
+                        </Link>
+                        <Link pr={1}
+                            as={NextLink}
+                            href={'#'}
+                            fontSize={'md'}
+                            fontWeight={700}
+                            color={'pink.400'}
+                            _hover={{
+                                textDecoration: 'none',
+                                color: linkHoverColor,
+                            }}>
+                            <InstagramIcon />
+                        </Link>
+                        <Link pr={1}
+                            as={NextLink}
+                            href={'#'}
+                            fontSize={'md'}
+                            fontWeight={700}
+                            color={'blue.500'}
+                            _hover={{
+                                textDecoration: 'none',
+                                color: linkHoverColor,
+                            }}>
+                            <TwitterIcon />
+                        </Link>
+                        <Link href={'#'}
+                            as={NextLink}
+                            fontSize={'md'}
+                            fontWeight={700}
+                            color={'pink.400'}
+                            _hover={{
+                                textDecoration: 'none',
+                                color: linkHoverColor,
+                            }}>
+                            <LinkIcon />
+                        </Link>
                     </Stack>
                 </Stack>
                 <Divider orientation='vertical' h={'3xs'} pr={20} />
                 <SimpleGrid columns={{ base: 1, sm: 2, md: 6 }} spacing={8} >
                     <Stack align={'flex-start'}>
                         <ListHeader>Explore</ListHeader>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Marketplace</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Collections</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Artists</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Loan</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Farm</Link>
-                        </NextLink>
+                        <Link as={NextLink} href={'#'}>Marketplace</Link>
+                        <Link as={NextLink} href={'#'}>Collections</Link>
+                        <Link as={NextLink} href={'#'}>Artists</Link>
+                        <Link as={NextLink} href={'#'}>Loan</Link>
+                        <Link as={NextLink} href={'#'}>Farm</Link>
                     </Stack>
                     <Stack align={'flex-start'}>
                         <ListHeader>Apply</ListHeader>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Apply for Artists</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Apply for Launchpad</Link>
-                        </NextLink>
+                        <Link as={NextLink} href={'#'}>Apply for Artists</Link>
+                        <Link as={NextLink} href={'#'}>Apply for Launchpad</Link>
                     </Stack>
                     <Stack align={'flex-start'}>
                         <ListHeader>Tracking</ListHeader>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Activities</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>NFT Ranking</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Collection Ranking</Link>
-                        </NextLink>
+                        <Link as={NextLink} href={'#'}>Activities</Link>
+                        <Link as={NextLink} href={'#'}>NFT Ranking</Link>
+                        <Link as={NextLink} href={'#'}>Collection Ranking</Link>
                     </Stack>
                     <Stack align={'flex-start'}>
                         <ListHeader>Resources</ListHeader>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Blog</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Community</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Guide</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Help Center</Link>
-                        </NextLink>
-                        <NextLink href={'#'} passHref>
-                            <Link href={'#'}>Newsletter</Link>
-                        </NextLink>
+                        <Link as={NextLink} href={'#'}>Blog</Link>
+                        <Link as={NextLink} href={'#'}>Community</Link>
+                        <Link as={NextLink} href={'#'}>Guide</Link>
+                        <Link as={NextLink} href={'#'}>Help Center</Link>
+                        <Link as={NextLink} href={'#'}>Newsletter</Link>
                     </Stack>
                     <Stack align={'flex-start'} w={60}>
                         <ListHeader>Join Newsletter</ListHeader>

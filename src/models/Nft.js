@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 let Schema = mongoose.Schema;
 
 let nft = new Schema({
+    chain: {
+        type: String,
+        default: "calamus",
+    },
     contract_address: {
         type: String,
         required: true,
@@ -9,6 +13,18 @@ let nft = new Schema({
     token_id: {
         type: String,
         required: true,
+    },
+    ipnft: {
+        type: String,
+        required: true
+    },
+    hash: {
+        type: String,
+        required: true
+    },
+    image: {
+        type: String,
+        required: true
     },
     name: {
         type: String,
@@ -26,31 +42,20 @@ let nft = new Schema({
     background_color: {
         type: String,
     },
-    creator_name: {
-        type: String,
-    },
     creator_address: {
         type: String,
     },
-    twitter: {
+    owner: {
         type: String,
-        required: false
     },
     attributes: [{
         display_type: String,
         trait_type: String,
         value: String
     }],
-    ipnft: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    }
 });
 mongoose.models = {};
+nft.index({ ipnft: 1, chain: 1 }, { unique: true })
 let Nft = mongoose.model('Nft', nft);
 
 export default Nft;

@@ -10,13 +10,15 @@ import {
 import NextLink from 'next/link';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 export default function NavItem({ label, href, subLabel }) {
-    return (<NextLink href={href} passHref>
+    return (
 
         <Link
+            as={NextLink}
             role={'group'}
             display={'block'}
             p={1}
             rounded={'md'}
+            href={href}
             _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}>
             <Stack direction={'row'} align={'center'}>
                 <Box>
@@ -40,6 +42,5 @@ export default function NavItem({ label, href, subLabel }) {
                 </Flex>
             </Stack>
         </Link>
-    </NextLink>
     );
 };
