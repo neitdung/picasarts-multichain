@@ -34,7 +34,6 @@ export default function MarketForm({ ipnft, listed }) {
     const [marketData, setMarketData] = useState({});
     const [tokenIndex, setTokenIndex] = useState(0);
     const [price, setPrice] = useState(0);
-    const [limit, setLimit] = useState(false);
     const [auction, setAuction] = useState(false);
     const [duration, setDuration] = useState("");
     const [nftSigner, setNftSigner] = useState({});
@@ -55,9 +54,7 @@ export default function MarketForm({ ipnft, listed }) {
         if (data[0].hasOwnProperty("auction")) {
             setAuction(data[0].auction);
         }
-        if (data[1].hasOwnProperty("limitTime")) {
-            setLimit(data[1].limitTime);
-        }
+
         if (data[1].hasOwnProperty("timeEnd")) {
             let timeUnix = 1000 * data[1].timeEnd.toNumber();
             let dateObj = new Date(timeUnix);

@@ -131,7 +131,7 @@ export default function LoanInfo({ id }) {
     const editLoanProposal = async () => {
         setIsLoading(true);
         try {
-            let realProfit = ethers.utils.parseUnits(addedProfit, tokenInfo.decimal);
+            let realProfit = ethers.utils.parseUnits(addedProfit, tokenInfo.decimals);
             await loanContract.obj.editProposal(id, realProfit, ethers.BigNumber.from(timeAdd));
             await loadData();
             toast({

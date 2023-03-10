@@ -60,7 +60,7 @@ export default function MarketCard({
                 <Flex justify={'space-between'} align={'center'}>
                     <Flex gap={2} alignItems='center'>
                         <Image h={6} src={tokenInfo?.logo} />
-                        {price && <Text fontWeight={700}> {tokenInfo ? ethers.utils.formatUnits(price, tokenInfo.decimal) : 0} {tokenInfo?.symbol}</Text>}
+                        {price && <Text fontWeight={700}> {tokenInfo ? ethers.utils.formatUnits(price, tokenInfo.decimals) : 0} {tokenInfo?.symbol}</Text>}
                     </Flex>
                     {auction ?
                             <Link

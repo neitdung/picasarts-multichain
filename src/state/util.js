@@ -138,6 +138,38 @@ export function formatDuration(seconds) {
     // using plural and singular form based on value
     const parts = [];
     if (day > 0) {
+        parts.push(`${day}d`);
+    }
+    if (hour > 0) {
+        parts.push(`${hour}h`);
+    }
+    if (minutes > 0) {
+        parts.push(`${minutes}m`);
+    }
+    if (seconds > 0) {
+        parts.push(`${seconds}s`);
+    }
+    // joining parts with a comma and space
+    let durationString = parts.join(' ');
+    // remove parts with zero value
+    durationString = durationString.replace(/0 [a-z]+(, )?/g, '');
+    // handle case where duration is zero
+    if (durationString === '') {
+        durationString = '0s';
+    }
+    return durationString;
+}
+
+export function formatDurationLong(seconds) {
+    const day = Math.floor(seconds / (24 * 3600));
+    seconds %= (24 * 3600);
+    const hour = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    const minutes = Math.floor(seconds / 60);
+    seconds %= 60;
+    // using plural and singular form based on value
+    const parts = [];
+    if (day > 0) {
         parts.push(`${day} day${day === 1 ? '' : 's'}`);
     }
     if (hour > 0) {

@@ -45,7 +45,7 @@ export default function RentalForm({ ipnft, listed }) {
         setTokenIndex(tIndex !== -1 ? tIndex : 0);
 
         if (data?.releaseFrequency) {
-            let newVal = ethers.utils.formatUnits(data.releaseFrequency, tokens.list[tIndex].decimal);
+            let newVal = ethers.utils.formatUnits(data.releaseFrequency, tokens.list[tIndex].decimals);
             setRelease(newVal);
         }
         if (data?.cycleTime) {
@@ -61,7 +61,7 @@ export default function RentalForm({ ipnft, listed }) {
     const listItem = async () => {
         setIsLoading(true);
         try {
-            let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimal);
+            let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimals);
             let cycleTimeDecimal = ethers.BigNumber.from(cycleTime);
             let cycleEndDecimal = ethers.BigNumber.from(cycleEnded);
             let nftContract = createNftContractWithSigner(contractAddress);
@@ -91,7 +91,7 @@ export default function RentalForm({ ipnft, listed }) {
     const editItem = async () => {
         setIsLoading(true);
         try {
-            let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimal);
+            let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimals);
             let cycleTimeDecimal = ethers.BigNumber.from(cycleTime);
             let cycleEndDecimal = ethers.BigNumber.from(cycleEnded);
             let editTx = await signer.edit(rentalData.itemId, tokens.list[tokenIndex].address, releaseDecimal, cycleTimeDecimal, cycleEndDecimal);
@@ -119,7 +119,7 @@ export default function RentalForm({ ipnft, listed }) {
     const relistItem = async () => {
         setIsLoading(true);
         try {
-            let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimal);
+            let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimals);
             let cycleTimeDecimal = ethers.BigNumber.from(cycleTime);
             let cycleEndDecimal = ethers.BigNumber.from(cycleEnded);
             let nftContract = createNftContractWithSigner(contractAddress);

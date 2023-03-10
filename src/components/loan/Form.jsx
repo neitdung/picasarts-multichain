@@ -11,12 +11,14 @@ import {
     VStack,
     Divider,
     Select,
-    ButtonGroup
+    ButtonGroup,
+    Input,
+    FormHelperText
 } from "@chakra-ui/react";
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import NotConnected from '../common/NotConnected';
 import { noneAddress, loanAddress } from 'src/state/chain/config';
-import { createNftContractWithSigner } from 'src/state/util';
+import { createNftContractWithSigner, formatDuration, parseDuration } from 'src/state/util';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/loan/thunks/loadContract';
 import { useRouter } from 'next/router';
@@ -44,28 +46,38 @@ export default function LoanForm({ ipnft, listed }) {
         setTokenIndex(tIndex !== -1 ? tIndex : 0);
 
         if (data?.amount) {
-            let newAmount = ethers.utils.formatUnits(data.amount, tokens.list[tIndex].decimal);
+            let newAmount = ethers.utils.formatUnits(data.amount, tokens.list[tIndex].decimals);
             setAmount(newAmount)
         }
         if (data?.profit) {
-            let newProfit = ethers.utils.formatUnits(data.profit, tokens.list[tIndex].decimal);
+            let newProfit = ethers.utils.formatUnits(data.profit, tokens.list[tIndex].decimals);
             setProfit(newProfit)
         }
         if (data?.duration) {
             let newDuration = data.duration.toNumber();
-            setDuration(newDuration)
+            setDuration(formatDuration(newDuration))
         }
     }
 
     const listItem = async () => {
         setIsLoading(true);
         try {
-            let amountDecimal = ethers.utils.parseUnits(amount, tokens.list[tokenIndex].decimal);
-            let profitDecimal = ethers.utils.parseUnits(profit, tokens.list[tokenIndex].decimal);
+            let convertData = parseDuration(duration);
+
+            if (convertData.error || convertData.result === 0) {
+                throw { message: "Duration is not approved." };
+            }
+            let amountDecimal = ethers.utils.parseUnits(amount, tokens.list[tokenIndex].decimals);
+            let profitDecimal = ethers.utils.parseUnits(profit, tokens.list[tokenIndex].decimals);
             let nftContract = createNftContractWithSigner(contractAddress);
             let approveTx = await nftContract.approve(loanAddress, tokenId);
             await approveTx.wait();
-            let listTx = await signer.list(contractAddress, tokenId, tokens.list[tokenIndex].address, amountDecimal, profitDecimal, duration);
+            let listTx = await signer.list(contractAddress,
+                tokenId,
+                tokens.list[tokenIndex].address,
+                amountDecimal,
+                profitDecimal,
+                BigNumber.from(convertData.result));
             await listTx.wait();
             toast({
                 title: "List NFT success",
@@ -89,9 +101,18 @@ export default function LoanForm({ ipnft, listed }) {
     const editItem = async () => {
         setIsLoading(true);
         try {
-            let amountDecimal = ethers.utils.parseUnits(amount, tokens.list[tokenIndex].decimal);
-            let profitDecimal = ethers.utils.parseUnits(profit, tokens.list[tokenIndex].decimal);
-            let editTx = await signer.edit(loanData.itemId, tokens.list[tokenIndex].address, amountDecimal, profitDecimal, duration);
+            let convertData = parseDuration(duration);
+
+            if (convertData.error || convertData.result === 0) {
+                throw { message: "Duration is not approved."};
+            }
+            let amountDecimal = ethers.utils.parseUnits(amount, tokens.list[tokenIndex].decimals);
+            let profitDecimal = ethers.utils.parseUnits(profit, tokens.list[tokenIndex].decimals);
+            let editTx = await signer.edit(loanData.itemId,
+                tokens.list[tokenIndex].address,
+                amountDecimal,
+                profitDecimal,
+                BigNumber.from(convertData.result));
             await editTx.wait();
             toast({
                 title: "Edit listing NFT success",
@@ -142,7 +163,6 @@ export default function LoanForm({ ipnft, listed }) {
     }
 
     const canEdit = useMemo(() => {
-        console.log(listed, loanData)
         if (listed && loanData?.borrower && loanData?.status == 0) {
             return account == loanData.borrower.toLowerCase();
         }
@@ -187,13 +207,12 @@ export default function LoanForm({ ipnft, listed }) {
                         <NumberInputField onChange={e => setProfit(e.target.value)} min={0} />
                     </NumberInput>
                 </FormControl>
-                <FormControl >
-                    <FormLabel fontWeight={700}>Time days</FormLabel>
-                    <NumberInput value={duration}>
-                        <NumberInputField onChange={e => setDuration(e.target.value)} />
-                    </NumberInput>
-                </FormControl>
             </Flex>
+            <FormControl>
+                <FormLabel fontWeight={700}>Duration</FormLabel>
+                <Input value={duration} onChange={e => setDuration(e.target.value)} />
+                <FormHelperText>Eg: 1d 2h 3m 4s.</FormHelperText>
+            </FormControl>
             {(loanData?.timeExpired?.eq(0) && loanData?.nftContract == noneAddress) &&
                 <Button isLoading={isLoading} onClick={listItem} w={'50%'} colorScheme='pink' alignSelf='center'>List NFT</Button>
             }

@@ -13,7 +13,7 @@ const initialState = {
             {
                 name: "ETH",
                 symbol: "ETH",
-                decimal: 18,
+                decimals: 18,
                 logo: "/eth.png",
                 address: noneAddress
             }
@@ -22,7 +22,7 @@ const initialState = {
             "0x0000000000000000000000000000000000000000": {
                 name: "ETH",
                 symbol: "ETH",
-                decimal: 18,
+                decimals: 18,
                 logo: "/eth.png",
                 address: noneAddress
             }

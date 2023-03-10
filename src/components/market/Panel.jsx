@@ -288,24 +288,6 @@ export default function MarketPanel({ contractAddress, tokenId, owner }) {
                     <Image src={tokenObj[marketData?.ftContract?.toLowerCase()]?.logo} h={8} />
                 </Box>
             </SimpleGrid>
-            {/* 
-            <Text>Higghest bid: 7 ETH</Text>
-            <Text>By: {marketAddress}</Text>
-            <Text>Time End: {new Date().toLocaleString()}</Text>
-            <NumberInput maxW={'3xs'} my={2}>
-                <NumberInputField min={0} placeholder='Enter new bid' />
-            </NumberInput>
-            <Button
-                w={'3xs'}
-                color={'white'}
-                bgGradient='linear(to-r, #f5505e, #ef1399)'
-                // disabled={isLoading || _address == marketData?.seller}
-                leftIcon={isLoading ? <CircularProgress size={'20px'} isIndeterminate /> : <HammerIcon />}
-                _hover={{
-                    bg: 'pink.300',
-                }}>
-                Place a bid
-            </Button> */}
         </Box>
     );
 }

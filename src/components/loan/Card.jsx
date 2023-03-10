@@ -15,7 +15,7 @@ import {
 import NextLink from 'next/link';
 import { TimeIcon, UnlockIcon, ViewIcon } from '@chakra-ui/icons';
 import { ethers } from 'ethers';
-import { shortenAddress } from 'src/state/util';
+import { formatDurationLong, shortenAddress } from 'src/state/util';
 
 export default function LoanCard({
     name,
@@ -79,7 +79,7 @@ export default function LoanCard({
                     </Heading>
                     <Text fontSize={'sm'}>Created by <NextLink href={`/artist/${creator_address}`} passHref><Link fontWeight={700}>{shortenAddress(borrower)}</Link></NextLink></Text>
                     <Text>Offer: {(amount && tokenInfo?.decimals) && ethers.utils.formatUnits(amount, tokenInfo.decimals)} {tokenInfo?.symbol} / Profit: {(profit && tokenInfo?.decimals) && ethers.utils.formatUnits(profit, tokenInfo.decimals)} {tokenInfo?.symbol}</Text>
-                    <Text>Duration: {duration.toNumber()} days</Text>
+                    <Text>Duration: {formatDurationLong(duration.toNumber())}</Text>
                     <Text>
                         Token Info: <Link target={'blank'}
                             href={`#`}>
