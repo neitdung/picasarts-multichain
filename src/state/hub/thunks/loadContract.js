@@ -16,7 +16,7 @@ const loadContract = createAsyncThunk("hub/contract", async (_payload, { getStat
         const contract = new ethers.Contract(hubAddress, Hub.abi, provider);
         return { contract: contract, isSigner: false }
     } else {
-        const provider = new ethers.providers.JsonRpcProvider(config.calamus.rpcAddress);
+        const provider = new ethers.providers.JsonRpcProvider(config.ftm.rpcAddress);
         const contract = new ethers.Contract(hubAddress, Hub.abi, provider);
         return { contract: contract, isSigner: false }
     }
