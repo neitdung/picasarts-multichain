@@ -8,13 +8,15 @@ import {
     Text,
     Stack,
     Link,
-    Button
+    Button,
+    ButtonGroup
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import HammerIcon from '../icons/Hammer';
 import BagIcon from '../icons/Bag';
 import { ethers } from 'ethers';
 import { shortenAddress } from 'src/state/util';
+import { ViewIcon } from '@chakra-ui/icons';
 
 export default function MarketCard({
     name,
@@ -26,7 +28,8 @@ export default function MarketCard({
     contract_address,
     token_id,
     auction,
-    tokenInfo
+    tokenInfo,
+    canEdit = false,
 }) {
     return (
         <Box
@@ -62,8 +65,33 @@ export default function MarketCard({
                         <Image h={6} src={tokenInfo?.logo} />
                         {price && <Text fontWeight={700}> {tokenInfo ? ethers.utils.formatUnits(price, tokenInfo.decimals) : 0} {tokenInfo?.symbol}</Text>}
                     </Flex>
-                    {auction ?
+                    {canEdit ? 
+                        <ButtonGroup>
                             <Link
+                                as={NextLink}
+                                href={`/nft/${contract_address}@${token_id}/list`}
+                                _hover={{
+                                    textDecoration: 'none'
+                                }} >
+                                <Button color={'white'}
+                                    leftIcon={<HammerIcon />}
+                                    colorScheme='red'>Edit</Button>
+                            </Link>
+                            <Link
+                                as={NextLink}
+                                href={`/nft/${contract_address}@${token_id}`}
+                                _hover={{
+                                    textDecoration: 'none'
+                                }} >
+                                <Button color={'white'}
+                                    leftIcon={<ViewIcon />}
+                                    colorScheme='pink'    
+                                >View</Button>
+                            </Link>
+                        </ButtonGroup>
+                        : auction ?
+                            <Link
+                                as={NextLink}
                                 href={`/nft/${contract_address}@${token_id}`}
                                 _hover={{
                                     textDecoration: 'none'
@@ -77,6 +105,7 @@ export default function MarketCard({
                             </Link>
                             :
                             <Link
+                                as={NextLink}
                                 href={`/nft/${contract_address}@${token_id}`}
                                 _hover={{
                                     textDecoration: 'none'

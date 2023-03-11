@@ -76,8 +76,10 @@ export default function CollectionCreate() {
                 let fee = await contract.CREATE_FEE();
                 let createReq = await signer.createCollection(values.name, values.symbol, metaHash, {value: fee});
                 let createRes = await createReq.wait();
-                let createEvents = createRes.events;
-                router.push(`/collection/edit/${createEvents[createEvents.length -1].args[0].toString()}`);
+                let createEvent = createRes.events.find(item => item.event == "CollectionCreated");
+                if (createEvent) {
+                    router.push(`/collection/edit/${createEvent.args[0].toString()}`);
+                }
             } catch (e) {
                 console.log(e)
                 toast({

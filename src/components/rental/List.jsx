@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     SimpleGrid,
     SkeletonCircle,
@@ -7,28 +7,32 @@ import {
 } from "@chakra-ui/react";
 import RentalCard from 'src/components/rental/Card';
 import { useDispatch, useSelector } from 'react-redux';
-import { rentalAddress } from 'src/state/chain/config';
+import { config } from 'src/state/chain/config';
 import loadContract from 'src/state/rental/thunks/loadContract';
 
 export default function RentalList({ address, columns }) {
     const dispatch = useDispatch();
-    const { selectedChain, tokens: { obj: tokenObj } } = useSelector(state => state.chain);
+    const { account, selectedChain, tokens: { obj: tokenObj } } = useSelector(state => state.chain);
     const [list, setList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const { contract, loaded } = useSelector(state => state.rental);
+    const canEdit = useMemo(() => address === account, [address, account])
 
-    const loadRental = async () => {
+    const loadRental = async (chain) => {
+        console.log("gohhh")
         setIsLoading(true);
         let listObj = {};
-        let nftListReq = await fetch(`/api/nft/get-by-owner?chain=${selectedChain}&address=${rentalAddress}`, { headers: { "content-type": "application/json" } });
+        let nftListReq = await fetch(`/api/nft/get-by-owner?chain=${chain}&address=${config[chain].rentalAddress}`, { headers: { "content-type": "application/json" } });
         let nftListRes = await nftListReq.json();
+        console.log(nftListRes)
         nftListRes.data.forEach(item => {
             listObj[item.ipnft.toLowerCase()] = item;
         });
         let rentalItems = await contract.getCovenants();
+        console.log(rentalItems)
         let mapList = [];
         if (address) {
-            mapList = rentalItems.filter(fItem => (fItem.seller == address && fItem.status != 0))
+            mapList = rentalItems.filter(fItem => (fItem.config.lender.toLowerCase() == address && fItem.status != 0))
                 .map(item => {
                     let keyNft = (item.config.nftContract + "@" + item.config.tokenId.toString()).toLowerCase();
                     if (listObj.hasOwnProperty(keyNft)) {
@@ -52,12 +56,14 @@ export default function RentalList({ address, columns }) {
     }
 
     useEffect(() => {
-        if (loaded) {
-            loadRental();
-        } else {
-            dispatch(loadContract());
+        if (selectedChain) {
+            if (loaded) {
+                loadRental(selectedChain);
+            } else {
+                dispatch(loadContract());
+            }
         }
-    }, [loaded]);
+    }, [loaded, selectedChain]);
 
     if (isLoading) return <Box padding='6' w='full' boxShadow='lg' bg='white'>
         <SkeletonCircle size='10' />
@@ -66,7 +72,7 @@ export default function RentalList({ address, columns }) {
     return (
         <SimpleGrid h={'min'} columns={columns ? columns : 3} gap={5} w={'full'}>
             {list.map(item =>
-                <RentalCard {...item} tokenInfo={tokenObj[item.config.ftContract.toLowerCase()]} />
+                <RentalCard canEdit={canEdit} {...item} tokenInfo={tokenObj[item.config.ftContract.toLowerCase()]} />
             )}
         </SimpleGrid>
     );

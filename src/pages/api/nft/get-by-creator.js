@@ -6,10 +6,10 @@ const handler = async (req, res) => {
         let { address } = req.query;
         if (address) {
             let chain = req.query.chain ? req.query.chain : 'calamus';
-            let docs = await Nft.find({ chain: chain, contract_address: { '$regex': req.query.address, $options: 'i' } });
+            let docs = await Nft.find({ chain: chain, creator_address: { '$regex': req.query.address, $options: 'i' } });
             return res.status(200).send({ error: false, data: docs });
         } else {
-            return res.status(400).send({ error: true, message: 'missing_args'});
+            return res.status(400).send({ error: true, message: 'missing_args' });
         }
     } else {
         return res.status(400).send({ error: true, message: 'method_not_support' });

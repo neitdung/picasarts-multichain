@@ -1,44 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-    Skeleton,
     SimpleGrid,
     Image,
     Box,
-    Divider,
     Text,
-    Avatar,
-    Flex,
-    VStack,
     Button,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
-    Progress,
-    ListItem,
-    UnorderedList,
-    Link,
     NumberInput,
     NumberInputField,
-    CircularProgress,
     useToast,
-    Center,
-    Tag,
-    TagLabel,
-    TagLeftIcon,
-    HStack,
-    FormControl,
-    FormLabel,
 } from "@chakra-ui/react";
-import NextLink from 'next/link';
 import HammerIcon from 'src/components/icons/Hammer';
 import BagIcon from 'src/components/icons/Bag';
-import { TimeIcon, MinusIcon, PlusSquareIcon } from '@chakra-ui/icons';
 import { createFtContractWithSigner, shortenAddress } from 'src/state/util';
 import { CheckIcon } from '@chakra-ui/icons';
 import { ethers, BigNumber } from 'ethers';
-import { noneAddress, marketAddress, loanAddress, rentalAddress } from 'src/state/chain/config';
+import { noneAddress, config } from 'src/state/chain/config';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/market/thunks/loadContract';
 
@@ -52,6 +28,7 @@ export default function MarketPanel({ contractAddress, tokenId, owner }) {
     const [bid, setBid] = useState({});
     const [bidPrice, setBidPrice] = useState(0);
     const [isEndedBid, setIsEndedbid] = useState(false);
+    const marketAddress = useMemo(() => config[selectedChain].marketAddress, [selectedChain]);
 
     const toast = useToast();
 

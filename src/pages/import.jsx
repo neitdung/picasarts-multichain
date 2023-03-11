@@ -133,9 +133,11 @@ export default function CollectionImport() {
                 duration: 3000,
                 isClosable: true,
             });
-            setIsLoading(false);
-            console.log(importRes.events)
-            router.push(`/collection/edit/${importEvents[importEvents.length - 1].args[0].toString()}`);
+            setIsLoading(false); 
+            let createEvent = importEvents.find(item => item.event == "CollectionListed");
+            if (createEvent) {
+                router.push(`/collection/edit/${createEvent.args[0].toString()}`);
+            }
         } else {
             toast({
                 title: "Please register as artist on profile page",

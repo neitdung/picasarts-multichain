@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { BigNumber, ethers } from 'ethers';
 import NotConnected from '../common/NotConnected';
-import { noneAddress, loanAddress } from 'src/state/chain/config';
+import { noneAddress, config } from 'src/state/chain/config';
 import { createNftContractWithSigner, formatDuration, parseDuration } from 'src/state/util';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/loan/thunks/loadContract';
@@ -26,7 +26,9 @@ import { useRouter } from 'next/router';
 export default function LoanForm({ ipnft, listed }) {
     const [contractAddress, tokenId] = ipnft.split("@");
     const dispatch = useDispatch();
-    const { account, tokens } = useSelector(state => state.chain);
+    const { account, tokens, selectedChain } = useSelector(state => state.chain);
+    const { loanAddress } = useMemo(() => config[selectedChain], [selectedChain]);
+
     const { signer, loaded, contract } = useSelector(state => state.loan);
     const [isLoading, setIsLoading] = useState(false);
     const [loanData, setLoanData] = useState({});
@@ -40,21 +42,21 @@ export default function LoanForm({ ipnft, listed }) {
 
     const loadLoanData = async () => {
         let data = await contract.getLoanData(contractAddress, tokenId);
-        setLoanData(data);
+        setLoanData(data[0]);
 
-        let tIndex = tokens.list.findIndex(item => item.address.toLowerCase() === data.ftContract.toLowerCase());
+        let tIndex = tokens.list.findIndex(item => item.address.toLowerCase() === data[0].ftContract.toLowerCase());
         setTokenIndex(tIndex !== -1 ? tIndex : 0);
 
-        if (data?.amount) {
-            let newAmount = ethers.utils.formatUnits(data.amount, tokens.list[tIndex].decimals);
+        if (data[0]?.amount) {
+            let newAmount = ethers.utils.formatUnits(data[0].amount, tokens.list[tIndex].decimals);
             setAmount(newAmount)
         }
-        if (data?.profit) {
-            let newProfit = ethers.utils.formatUnits(data.profit, tokens.list[tIndex].decimals);
+        if (data[0]?.profit) {
+            let newProfit = ethers.utils.formatUnits(data[0].profit, tokens.list[tIndex].decimals);
             setProfit(newProfit)
         }
-        if (data?.duration) {
-            let newDuration = data.duration.toNumber();
+        if (data[0]?.duration) {
+            let newDuration = data[0].duration.toNumber();
             setDuration(formatDuration(newDuration))
         }
     }

@@ -32,7 +32,8 @@ const addChainToMetamask = async (chain) => {
 }
 
 const switchNetwork = async (chain) => {
-    const currentChainId = await getNetworkId()
+    const currentChainId = await getNetworkId();
+
     let chainId = config[chain].chainId;
     if (currentChainId !== chainId) {
         try {

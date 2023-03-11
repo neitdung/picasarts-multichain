@@ -1,10 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ethers } from "ethers";
-import { hubAddress, config } from "src/state/chain/config";
+import { config } from "src/state/chain/config";
 import Hub from "src/abis/Hub.json";
 
 const loadContract = createAsyncThunk("hub/contract", async (_payload, { getState }) => {
     let state = await getState();
+    const hubAddress = config[state.chain.selectedChain].hubAddress;
     if (state.chain.account) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();

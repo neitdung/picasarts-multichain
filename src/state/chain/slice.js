@@ -6,7 +6,7 @@ import loadTokens from "./thunks/loadTokens";
 const initialState = {
     isConnecting: false,
     selectedChain: "",
-    availableChains: ["calamus", "picasart"],
+    availableChains: ["ftm", "avax", "bttc"],
     tokens: {
         loaded: false,
         list: [

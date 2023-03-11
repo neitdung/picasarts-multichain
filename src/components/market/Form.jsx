@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Button,
     FormControl,
@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { BigNumber, ethers } from 'ethers';
 import NotConnected from '../common/NotConnected';
-import { noneAddress, marketAddress } from 'src/state/chain/config';
+import { config, noneAddress } from 'src/state/chain/config';
 import { createNftContractWithSigner, parseDuration } from 'src/state/util';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/market/thunks/loadContract';
@@ -28,7 +28,7 @@ import { useRouter } from 'next/router';
 export default function MarketForm({ ipnft, listed }) {
     const [contractAddress, tokenId] = ipnft.split("@");
     const dispatch = useDispatch();
-    const { account, tokens } = useSelector(state => state.chain);
+    const { account, tokens, selectedChain } = useSelector(state => state.chain);
     const { signer, loaded, contract } = useSelector(state => state.market);
     const [isLoading, setIsLoading] = useState(false);
     const [marketData, setMarketData] = useState({});
@@ -40,7 +40,7 @@ export default function MarketForm({ ipnft, listed }) {
     const [timeEnd, setTimeEnd] = useState("");
     const router = useRouter();
     const toast = useToast();
-
+    const marketAddress = useMemo(() => config[selectedChain].marketAddress, [selectedChain]);
     const loadMarketData = async () => {
         let data = await contract.getMarketData(contractAddress.toLowerCase(), BigNumber.from(tokenId));
         let nftContract = createNftContractWithSigner(contractAddress);

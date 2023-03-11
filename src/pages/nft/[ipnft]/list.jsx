@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Grid,
     GridItem,
@@ -16,12 +16,13 @@ import NotConnected from 'src/components/common/NotConnected';
 import NFTCard from 'src/components/nft/Card';
 import MarketForm from 'src/components/market/Form';
 import LoanForm from 'src/components/loan/Form';
-import { noneAddress, marketAddress, loanAddress, rentalAddress } from 'src/state/chain/config';
+import { noneAddress, config } from 'src/state/chain/config';
 import { useSelector } from 'react-redux';
 import RentalForm from 'src/components/rental/Form';
 
 export default function NftList({ ipnft }) {
-    const { account, tokens: {obj: tokenObj}, selectedChain } = useSelector(state => state.chain);
+    const { account, tokens: { obj: tokenObj }, selectedChain } = useSelector(state => state.chain);
+    const { marketAddress, loanAddress, rentalAddress } = useMemo(() => config[selectedChain], [selectedChain]);
     const [displayLoan, setDisplayLoan] = useState(false);
     const [displayMarket, setDisplayMarket] = useState(false);
     const [displayRental, setDisplayRental] = useState(false);
@@ -41,15 +42,15 @@ export default function NftList({ ipnft }) {
         if (!getResJson.error) {
             setMetadata(getResJson.data)
             switch (getResJson.data.owner.toLowerCase()) {
-                case marketAddress:
+                case marketAddress.toLowerCase():
                     setListed(true)
                     setDisplayMarket(true)
                     break
-                case loanAddress:
+                case loanAddress.toLowerCase():
                     setListed(true)
                     setDisplayLoan(true)
                     break
-                case rentalAddress:
+                case rentalAddress.toLowerCase():
                     setListed(true)
                     setDisplayRental(true)
                     break

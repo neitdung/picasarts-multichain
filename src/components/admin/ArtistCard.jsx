@@ -51,7 +51,7 @@ export default function ArtistCard({ name, bio, address, avatar, banner, faceboo
             <Box p={6}>
                 <Stack spacing={2} align={'center'} mb={5}>
                     <Heading fontSize={'xl'} fontWeight={500} fontFamily={'body'}>
-                        <NextLink href={`/user/${address}`} passHref><Link color={'blue.500'}>{name ? name : "Artist Name"}</Link></NextLink>
+                        <NextLink href={`/artist/${address}`} passHref><Link color={'blue.500'}>{name ? name : "Artist Name"}</Link></NextLink>
                     </Heading>
                     <Text textAlign={'center'}>{bio ? bio : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}</Text>
                     <HStack gap={12} fontSize={'2xl'}>

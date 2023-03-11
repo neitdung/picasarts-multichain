@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
     Heading,
     Tag,
@@ -10,10 +10,12 @@ import {
     Text,
     Stack,
     Link,
-    Button
+    Button,
+    ButtonGroup
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { TimeIcon, UnlockIcon, ViewIcon } from '@chakra-ui/icons';
+import HammerIcon from '../icons/Hammer';
 import { ethers } from 'ethers';
 import { formatDurationLong, shortenAddress } from 'src/state/util';
 
@@ -31,7 +33,8 @@ export default function LoanCard({
     status,
     tokenInfo,
     contract_address,
-    token_id
+    token_id,
+    canEdit
 }) {
     const timeLeft = useMemo(() => {
         const now = new Date().getTime();
@@ -93,18 +96,44 @@ export default function LoanCard({
                     <Box>
                         {tokenInfo?.logo && <Image h={8} src={tokenInfo?.logo} />}
                     </Box>
-                    <NextLink href={`/nft/${contract_address}@${token_id}`} passHref>
-                        <Link _hover={{
-                            textDecoration: 'none'
-                        }} >
-                            <Button color={'white'}
-                                bgGradient='linear(to-r, #f5505e, #ef1399)'
-                                leftIcon={<ViewIcon />}
+                    {canEdit ?
+                        <ButtonGroup>
+                            <Link
+                                as={NextLink}
+                                href={`/nft/${contract_address}@${token_id}/list`}
                                 _hover={{
-                                    bg: 'pink.300',
-                                }}>View Covenant</Button>
-                        </Link>
-                    </NextLink>
+                                    textDecoration: 'none'
+                                }} >
+                                <Button color={'white'}
+                                    leftIcon={<HammerIcon />}
+                                    colorScheme='red'>Edit</Button>
+                            </Link>
+                            <Link
+                                as={NextLink}
+                                href={`/nft/${contract_address}@${token_id}`}
+                                _hover={{
+                                    textDecoration: 'none'
+                                }} >
+                                <Button color={'white'}
+                                    leftIcon={<ViewIcon />}
+                                    colorScheme='pink'
+                                >View</Button>
+                            </Link>
+                        </ButtonGroup> :
+                            <Link _hover={{
+                                textDecoration: 'none'
+                        }}
+                            href={`/nft/${contract_address}@${token_id}`}
+                            as={NextLink}
+                        >
+                                <Button color={'white'}
+                                    bgGradient='linear(to-r, #f5505e, #ef1399)'
+                                    leftIcon={<ViewIcon />}
+                                    _hover={{
+                                        bg: 'pink.300',
+                                    }}>View Covenant</Button>
+                            </Link>
+                    }
                 </Flex>
             </Box>
         </Box>

@@ -1,10 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ethers } from "ethers";
-import { rentalAddress, config } from "src/state/chain/config";
+import { config } from "src/state/chain/config";
 import Rental from "src/abis/Rental.json";
 
 const loadContract = createAsyncThunk("rental/contract", async (_payload, { getState }) => {
     let state = await getState();
+    const rentalAddress = config[state.chain.selectedChain].rentalAddress;
+
     if (state.chain.account) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();

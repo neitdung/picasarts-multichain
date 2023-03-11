@@ -5,43 +5,42 @@ import {
     SkeletonText,
     Box
 } from "@chakra-ui/react";
-import MarketCard from 'src/components/market/Card';
+import RentalCard from 'src/components/rental/Card';
 import { useDispatch, useSelector } from 'react-redux';
-import loadContract from 'src/state/market/thunks/loadContract';
 import { config } from 'src/state/chain/config';
-export default function MarketList({ address, columns }) {
+import loadContract from 'src/state/rental/thunks/loadContract';
+
+export default function RentalListRenting({ address, columns }) {
     const dispatch = useDispatch();
-    const {account, selectedChain, tokens: { obj: tokenObj}} = useSelector(state => state.chain);
-    const {contract, loaded} = useSelector(state => state.market);
-
-    const [isLoading, setIsLoading] = useState(true);
+    const { selectedChain, tokens: { obj: tokenObj } } = useSelector(state => state.chain);
     const [list, setList] = useState([]);
-    const canEdit = useMemo(() => address === account, [address, account])
-    const marketAddress = useMemo(() => config[selectedChain].marketAddress, [selectedChain]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { contract, loaded } = useSelector(state => state.rental);
+    const { rentalAddress } = useMemo(() => config[selectedChain], [selectedChain]);
 
-    const loadMarket = async () => {
+    const loadRental = async () => {
         setIsLoading(true);
         let listObj = {};
-        let nftListReq = await fetch(`/api/nft/get-by-owner?chain=${selectedChain}&address=${marketAddress}`, { headers: { "content-type": "application/json" } });
+        let nftListReq = await fetch(`/api/nft/get-by-owner?chain=${selectedChain}&address=${rentalAddress}`, { headers: { "content-type": "application/json" } });
         let nftListRes = await nftListReq.json();
         nftListRes.data.forEach(item => {
             listObj[item.ipnft.toLowerCase()] = item;
         });
-        let marketItems = await contract.getListedNfts();
+        let rentalItems = await contract.getCovenants();
         let mapList = [];
         if (address) {
-            mapList = marketItems.filter(fItem => (fItem.seller.toLowerCase() == address))
+            mapList = rentalItems.filter(fItem => (fItem.profile.borrower.toLowerCase() == address && fItem.status != 0))
                 .map(item => {
-                    let keyNft = (item.nftContract + "@" + item.tokenId.toString()).toLowerCase();
+                    let keyNft = (item.config.nftContract + "@" + item.config.tokenId.toString()).toLowerCase();
                     if (listObj.hasOwnProperty(keyNft)) {
                         return ({ ...item, ...listObj[keyNft], accepted: true })
                     } else {
-                        return ({...item, accepted: false})
+                        return ({ ...item, accepted: false })
                     }
                 }).filter(mItem => mItem.accepted);
         } else {
-            mapList = marketItems.map(item => {
-                let keyNft = (item.nftContract + "@" + item.tokenId.toString()).toLowerCase();
+            mapList = rentalItems.filter(fItem => fItem.status != 0).map(item => {
+                let keyNft = (item.config.nftContract + "@" + item.config.tokenId.toString()).toLowerCase();
                 if (listObj.hasOwnProperty(keyNft)) {
                     return ({ ...item, ...listObj[keyNft], accepted: true })
                 } else {
@@ -55,7 +54,7 @@ export default function MarketList({ address, columns }) {
 
     useEffect(() => {
         if (loaded) {
-            loadMarket();
+            loadRental();
         } else {
             dispatch(loadContract());
         }
@@ -66,9 +65,9 @@ export default function MarketList({ address, columns }) {
         <SkeletonText mt='4' noOfLines={4} spacing='4' />
     </Box>;
     return (
-        <SimpleGrid h={'min'} columns={columns ? columns : 4} gap={5} w={'full'}>
+        <SimpleGrid h={'min'} columns={columns ? columns : 3} gap={5} w={'full'}>
             {list.map(item =>
-                <MarketCard canEdit={canEdit} {...item} tokenInfo={tokenObj[item.ftContract.toLowerCase()]} />
+                <RentalCard canEdit={false} {...item} tokenInfo={tokenObj[item.config.ftContract.toLowerCase()]} />
             )}
         </SimpleGrid>
     );

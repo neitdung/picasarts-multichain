@@ -4,7 +4,8 @@ import {
     Button,
     FormControl,
     FormLabel,
-    Switch,
+    Input,
+    FormHelperText,
     Image,
     NumberInput,
     NumberInputField,
@@ -16,8 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { ethers } from 'ethers';
 import NotConnected from '../common/NotConnected';
-import { noneAddress, rentalAddress } from 'src/state/chain/config';
-import { createNftContractWithSigner } from 'src/state/util';
+import { noneAddress, config } from 'src/state/chain/config';
+import { createNftContractWithSigner, formatDuration, parseDuration } from 'src/state/util';
 import { useDispatch, useSelector } from 'react-redux';
 import loadContract from 'src/state/rental/thunks/loadContract';
 import { useRouter } from 'next/router';
@@ -25,7 +26,7 @@ import { useRouter } from 'next/router';
 export default function RentalForm({ ipnft, listed }) {
     const [contractAddress, tokenId] = ipnft.split("@");
     const dispatch = useDispatch();
-    const { account, tokens } = useSelector(state => state.chain);
+    const { account, tokens, selectedChain } = useSelector(state => state.chain);
     const { signer, loaded, contract } = useSelector(state => state.rental);
     const [isLoading, setIsLoading] = useState(false);
     const [rentalData, setRentalData] = useState({});
@@ -33,36 +34,42 @@ export default function RentalForm({ ipnft, listed }) {
     const [release, setRelease] = useState();
     const [cycleTime, setCycleTime] = useState();
     const [cycleEnded, setCycleEnded] = useState();
+    const { rentalAddress } = useMemo(() => config[selectedChain], [selectedChain]);
 
     const router = useRouter();
     const toast = useToast();
 
     const loadRentalData = async () => {
         let data = await contract.getRentalData(contractAddress, tokenId);
-        setRentalData(data);
+        setRentalData(data[0]);
 
-        let tIndex = tokens.list.findIndex(item => item.address.toLowerCase() === data.ftContract.toLowerCase());
+        let tIndex = tokens.list.findIndex(item => item.address.toLowerCase() === data[0].ftContract.toLowerCase());
         setTokenIndex(tIndex !== -1 ? tIndex : 0);
 
-        if (data?.releaseFrequency) {
-            let newVal = ethers.utils.formatUnits(data.releaseFrequency, tokens.list[tIndex].decimals);
+        if (data[0]?.releaseFrequency) {
+            let newVal = ethers.utils.formatUnits(data[0].releaseFrequency, tokens.list[tIndex].decimals);
             setRelease(newVal);
         }
-        if (data?.cycleTime) {
-            let newVal = data.cycleTime.toString();
-            setCycleTime(newVal)
+        if (data[0]?.cycleTime) {
+            let newVal = data[0].cycleTime.toNumber();
+            setCycleTime(formatDuration(newVal))
         }
-        if (data?.cycleEnded) {
-            let newVal = data.cycleEnded.toString();
+        if (data[0]?.cycleEnded) {
+            let newVal = data[0].cycleEnded.toString();
             setCycleEnded(newVal)
         }
     }
 
-    const listItem = async () => {
+    const list = async () => {
         setIsLoading(true);
         try {
+            let convertData = parseDuration(cycleTime);
+
+            if (convertData.error || convertData.result == 0) {
+                throw { message: "Cycle time is not approved." };
+            }
             let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimals);
-            let cycleTimeDecimal = ethers.BigNumber.from(cycleTime);
+            let cycleTimeDecimal = ethers.BigNumber.from(convertData.result);
             let cycleEndDecimal = ethers.BigNumber.from(cycleEnded);
             let nftContract = createNftContractWithSigner(contractAddress);
             let approveTx = await nftContract.approve(rentalAddress, tokenId);
@@ -88,11 +95,16 @@ export default function RentalForm({ ipnft, listed }) {
         }
     }
 
-    const editItem = async () => {
+    const edit = async () => {
         setIsLoading(true);
         try {
+            let convertData = parseDuration(cycleTime);
+
+            if (convertData.error || convertData.result == 0) {
+                throw { message: "Cycle time is not approved." };
+            }
             let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimals);
-            let cycleTimeDecimal = ethers.BigNumber.from(cycleTime);
+            let cycleTimeDecimal = ethers.BigNumber.from(convertData.result);
             let cycleEndDecimal = ethers.BigNumber.from(cycleEnded);
             let editTx = await signer.edit(rentalData.itemId, tokens.list[tokenIndex].address, releaseDecimal, cycleTimeDecimal, cycleEndDecimal);
             await editTx.wait();
@@ -116,11 +128,16 @@ export default function RentalForm({ ipnft, listed }) {
         }
     }
 
-    const relistItem = async () => {
+    const relist = async () => {
         setIsLoading(true);
         try {
+            let convertData = parseDuration(cycleTime);
+
+            if (convertData.error || convertData.result == 0) {
+                throw { message: "Cycle time is not approved." };
+            }
             let releaseDecimal = ethers.utils.parseUnits(release, tokens.list[tokenIndex].decimals);
-            let cycleTimeDecimal = ethers.BigNumber.from(cycleTime);
+            let cycleTimeDecimal = ethers.BigNumber.from(convertData.result);
             let cycleEndDecimal = ethers.BigNumber.from(cycleEnded);
             let nftContract = createNftContractWithSigner(contractAddress);
             let approveTx = await nftContract.approve(rentalAddress, tokenId);
@@ -214,12 +231,6 @@ export default function RentalForm({ ipnft, listed }) {
                         <NumberInputField onChange={e => setRelease(e.target.value)} min={0} />
                     </NumberInput>
                 </FormControl>
-                <FormControl id="cycle-time">
-                    <FormLabel fontWeight={700}>Cycle time</FormLabel>
-                    <NumberInput value={cycleTime}>
-                        <NumberInputField onChange={e => setCycleTime(e.target.value)} min={0} />
-                    </NumberInput>
-                </FormControl>
                 <FormControl >
                     <FormLabel fontWeight={700}>Cycle before stop</FormLabel>
                     <NumberInput value={cycleEnded}>
@@ -227,15 +238,20 @@ export default function RentalForm({ ipnft, listed }) {
                     </NumberInput>
                 </FormControl>
             </Flex>
+            <FormControl id="cycle-time">
+                <FormLabel fontWeight={700}>Cycle time</FormLabel>
+                <Input value={cycleTime} onChange={e => setCycleTime(e.target.value)} />
+                <FormHelperText>Eg: 1d 2h 3m 4s.</FormHelperText>
+            </FormControl>
             {(!listed && rentalData?.nftContract == noneAddress) &&
-                <Button isLoading={isLoading} onClick={listItem} w={'50%'} colorScheme='teal' alignSelf='center'>List NFT</Button>
+                <Button isLoading={isLoading} onClick={list} w={'50%'} colorScheme='teal' alignSelf='center'>List NFT</Button>
             }
             {(!listed && rentalData?.nftContract != noneAddress) &&
-                <Button isLoading={isLoading} onClick={relistItem} w={'50%'} colorScheme='teal' alignSelf='center'>Relist NFT</Button>
+                <Button isLoading={isLoading} onClick={relist} w={'50%'} colorScheme='teal' alignSelf='center'>Relist NFT</Button>
             }
             {(canEdit) &&
                 <ButtonGroup w={'full'}>
-                    <Button onClick={editItem} colorScheme='teal' isLoading={isLoading} w={'full'}>Edit Covenant</Button>
+                    <Button onClick={edit} colorScheme='teal' isLoading={isLoading} w={'full'}>Edit Covenant</Button>
                     <Button w={'full'} variant='outline' colorScheme='red' onClick={unlist} isLoading={isLoading}>Unlist Item</Button>
                 </ButtonGroup>
             }

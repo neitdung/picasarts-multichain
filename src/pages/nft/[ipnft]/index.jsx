@@ -9,7 +9,6 @@ import {
     Avatar,
     Flex,
     VStack,
-    Button,
     Tabs,
     TabList,
     TabPanels,
@@ -19,35 +18,20 @@ import {
     ListItem,
     UnorderedList,
     Link,
-    NumberInput,
-    NumberInputField,
-    CircularProgress,
     useToast,
     Center,
-    Tag,
-    TagLabel,
-    TagLeftIcon,
-    HStack,
-    FormControl,
-    FormLabel,
 } from "@chakra-ui/react";
 import NextLink from 'next/link';
-import HammerIcon from 'src/components/icons/Hammer';
-import BagIcon from 'src/components/icons/Bag';
-import { TimeIcon, MinusIcon, PlusSquareIcon } from '@chakra-ui/icons';
-import { CheckIcon } from '@chakra-ui/icons';
-import { ethers } from 'ethers';
-import { noneAddress, marketAddress, loanAddress, rentalAddress, daiAddress, usdcAddress } from 'src/state/chain/config';
-import { createFtContractWithSigner } from 'src/state/util';
-import { useDispatch, useSelector } from 'react-redux';
+import { config } from 'src/state/chain/config';
+import { useSelector } from 'react-redux';
 import { getTextColor } from 'src/state/util';
 import MarketPanel from 'src/components/market/Panel';
+import LoanPanel from 'src/components/loan/Panel';
+import RentalPanel from 'src/components/rental/Panel';
 
 export default function NftBuy({ ipnft }) {
     const [contractAddress, tokenId] = ipnft.split("@");
-    const dispatch = useDispatch();
-    const { account, selectedChain, tokens: { obj: tokenObj, loaded: tokenLoaded } } = useSelector(state => state.chain);
-    const { contract: hubContract, loaded: hubLoaded } = useSelector(state => state.hub);
+    const { selectedChain } = useSelector(state => state.chain);
 
     const [isLoading, setIsLoading] = useState(false);
     const [metadata, setMetadata] = useState({});
@@ -59,18 +43,17 @@ export default function NftBuy({ ipnft }) {
     const [tabIndex, setTabIndex] = useState(0);
     const toast = useToast();
 
-    const loadData = async () => {
+    const loadData = async (selectedChain) => {
         setIsLoading(true);
         let dataRes = await fetch(`/api/nft/get?chain=${selectedChain}&ipnft=${ipnft}`);
         let dataJson = await dataRes.json();
         await loadCollectionData(contractAddress);
         await loadCreatorData(dataJson.data.creator_address);
         setMetadata(dataJson.data);
-        console.log(dataJson.data)
-        if (dataJson.data.owner.toLowerCase() === loanAddress) {
+        if (dataJson.data.owner.toLowerCase() === config[selectedChain].loanAddress.toLowerCase()) {
             setTabIndex(1);
         }
-        if (dataJson.data.owner.toLowerCase() === rentalAddress) {
+        if (dataJson.data.owner.toLowerCase() === config[selectedChain].rentalAddress.toLowerCase()) {
             setTabIndex(2);
         }
         setProperties(dataJson.data.attributes.filter(item => item.display_type == "string"))
@@ -96,9 +79,10 @@ export default function NftBuy({ ipnft }) {
     }
 
     useEffect(() => {
-        loadData();
-    }, [])
-
+        if (selectedChain) {
+            loadData(selectedChain);
+        }
+    }, [selectedChain])
 
     return (
         <Box>
@@ -109,7 +93,6 @@ export default function NftBuy({ ipnft }) {
                 <VStack gap={4} align={'left'}>
                     <Box>
                         <Text fontSize={'2xl'} fontWeight={700}>{metadata?.name}</Text>
-                        {/* <Text>Sell by <NextLink href={`/user/${marketData?.seller}`} passHref><Link fontWeight={700}>{marketData?.seller}</Link></NextLink></Text> */}
                     </Box>
                     <Box border={'2px pink dashed'} borderRadius={2}>
                         <Tabs variant='enclosed-colored' isFitted colorScheme='pink' index={tabIndex} onChange={handleTabsChange} isLazy >
@@ -123,68 +106,10 @@ export default function NftBuy({ ipnft }) {
                                     <MarketPanel owner={metadata?.owner} contractAddress={contractAddress} tokenId={tokenId} />
                                 </TabPanel>
                                 <TabPanel>
-                                    <Text fontWeight={700}>Borrower: {usdcAddress}</Text>
-                                    <UnorderedList>
-                                        <ListItem>
-                                            Loans accepted: 20
-                                        </ListItem>
-                                        <ListItem>
-                                            Loans liquidated: 2
-                                        </ListItem>
-                                        <ListItem>
-                                            Offer: 20 ETH
-                                        </ListItem>
-                                        <ListItem>
-                                            Profit: 2 ETH
-                                        </ListItem>
-                                        <ListItem>
-                                            Token Info: <Link target={'blank'}
-                                                href={`#`}>
-                                                ETH
-                                            </Link>
-                                        </ListItem>
-                                        <ListItem>
-                                            Duration: 3 days
-                                        </ListItem>
-                                    </UnorderedList>
-
-                                    <HStack my={2}>
-                                        <Text>Remain time:</Text>
-                                        <Tag size={'lg'} variant='outline' colorScheme='red' bg={'white'}>
-                                            <TagLeftIcon boxSize='12px' as={TimeIcon} />
-                                            <TagLabel>{Math.floor(7200000 / (1000 * 60 * 60 * 24))}D:{Math.floor((7200000 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}H:{Math.floor((7200000 % (1000 * 60 * 60)) / (1000 * 60))}M</TagLabel>
-                                        </Tag>
-                                    </HStack>
-                                    <Flex w='full' gap={5}>
-                                        <FormControl>
-                                            <FormLabel>Profit</FormLabel>
-                                            <NumberInput maxW={'3xs'} my={2}>
-                                                <NumberInputField min={0} placeholder='Enter add profit' />
-                                            </NumberInput>
-                                        </FormControl>
-                                        <FormControl>
-                                            <FormLabel>Time extend (days):</FormLabel>
-                                            <NumberInput maxW={'3xs'} my={2}>
-                                                <NumberInputField min={0} placeholder='Enter time add (days)' />
-                                            </NumberInput>
-                                        </FormControl>
-
-                                    </Flex>
-                                    <Center gap={5}><Button colorScheme={'teal'} leftIcon={<PlusSquareIcon />}>Add Proposal</Button> <Button colorScheme={'red'} leftIcon={<MinusIcon />}>Pay Off</Button></Center>
+                                    <LoanPanel owner={metadata?.owner} contractAddress={contractAddress} tokenId={tokenId} />
                                 </TabPanel>
                                 <TabPanel>
-                                    <UnorderedList spacing={4}>
-                                        <ListItem>
-                                            <Text>Contract address: {contractAddress}</Text>
-                                        </ListItem>
-                                        <ListItem>
-                                            <Text>Token ID: {tokenId}</Text>
-                                        </ListItem>
-                                        {(metadata?.royalty) &&
-                                            <ListItem>
-                                                <Text>Royalty: {parseFloat(metadata?.royalty / 100)}%</Text>
-                                            </ListItem>}
-                                    </UnorderedList>
+                                    <RentalPanel owner={metadata?.owner} contractAddress={contractAddress} tokenId={tokenId} />
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>

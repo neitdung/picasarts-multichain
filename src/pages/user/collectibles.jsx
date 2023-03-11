@@ -14,7 +14,8 @@ import {
     Skeleton,
     Avatar,
     Divider,
-    HStack
+    HStack,
+    Center
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import FacebookIcon from 'src/components/icons/Facebook';
@@ -27,6 +28,11 @@ import MyNfts from './my-nfts';
 // import MarketList from 'src/components/market/List';
 import { useDispatch, useSelector } from 'react-redux';
 import getProfile from 'src/state/profile/thunks/getProfile';
+import MarketList from 'src/components/market/List';
+import LoanList from 'src/components/loan/List';
+import LoanListLending from 'src/components/loan/ListLending';
+import RentalList from 'src/components/rental/List';
+import RentalListRenting from 'src/components/rental/ListRenting';
 
 export default function Collectibles() {
     const dispatch = useDispatch();
@@ -75,12 +81,13 @@ export default function Collectibles() {
                 <Text>{data.bio}</Text>
             </VStack>
             <Box px={{ base: 4, md: 20 }} my={4}>
-                <Tabs isFitted variant={'enclosed'} borderWidth={2}>
+                <Tabs isFitted variant={'enclosed'} borderWidth={2} isLazy>
                     <TabList>
                         <Tab>Archived</Tab>
                         <Tab>Collections</Tab>
-                        <Tab>Listing</Tab>
+                        <Tab>Market</Tab>
                         <Tab>Loan</Tab>
+                        <Tab>Rental</Tab>
                     </TabList>
                     <TabPanels>
                         <TabPanel>
@@ -90,10 +97,19 @@ export default function Collectibles() {
                             <CollectionList address={account} limit={3} />
                         </TabPanel>
                         <TabPanel>
-                            {/* <MarketList address={_address} /> */}
+                            <MarketList address={account} />
                         </TabPanel>
                         <TabPanel>
-                            {/* <LoanList address={_address} /> */}
+                            <Center><Text as='mark' fontSize='3xl'>Listing</Text></Center>
+                            <LoanList address={account} />
+                            <Center><Text as='mark' fontSize='3xl' mx={2}>Lending</Text></Center>
+                            <LoanListLending address={account} />
+                        </TabPanel>
+                        <TabPanel>
+                            <Center><Text as='mark' fontSize='3xl'>Listing</Text></Center>
+                            <RentalList address={account} />
+                            <Center><Text as='mark' fontSize='3xl' mx={2}>Borrowing</Text></Center>
+                            <RentalListRenting address={account} />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

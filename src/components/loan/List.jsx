@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     SimpleGrid,
     SkeletonCircle,
@@ -7,15 +7,17 @@ import {
 } from "@chakra-ui/react";
 import LoanCard from 'src/components/loan/Card';
 import { useDispatch, useSelector } from 'react-redux';
-import { loanAddress } from 'src/state/chain/config';
+import { config } from 'src/state/chain/config';
 import loadContract from 'src/state/loan/thunks/loadContract';
 
 export default function LoanList({ address, columns }) {
     const dispatch = useDispatch();
-    const { selectedChain, tokens: { obj: tokenObj } } = useSelector(state => state.chain);
+    const { account, selectedChain, tokens: { obj: tokenObj } } = useSelector(state => state.chain);
     const [list, setList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const { contract, loaded } = useSelector(state => state.loan);
+    const canEdit = useMemo(() => address === account, [address, account])
+    const { loanAddress } = useMemo(() => config[selectedChain], [selectedChain]);
 
     const loadLoan = async () => {
         setIsLoading(true);
@@ -26,10 +28,9 @@ export default function LoanList({ address, columns }) {
             listObj[item.ipnft.toLowerCase()] = item;
         });
         let loanItems = await contract.getCovenants();
-        console.log(loanItems)
         let mapList = [];
         if (address) {
-            mapList = loanItems.filter(fItem => (fItem.seller == address && fItem.status != 2))
+            mapList = loanItems.filter(fItem => (fItem.borrower.toLowerCase() == address && fItem.status != 2))
                 .map(item => {
                     let keyNft = (item.nftContract + "@" + item.tokenId.toString()).toLowerCase();
                     if (listObj.hasOwnProperty(keyNft)) {
@@ -67,7 +68,7 @@ export default function LoanList({ address, columns }) {
     return (
         <SimpleGrid h={'min'} columns={columns ? columns : 3} gap={5} w={'full'}>
             {list.map(item =>
-                <LoanCard {...item} tokenInfo={tokenObj[item.ftContract.toLowerCase()]} />
+                <LoanCard canEdit={canEdit} {...item} tokenInfo={tokenObj[item.ftContract.toLowerCase()]} />
             )}
         </SimpleGrid>
     );

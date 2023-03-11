@@ -1,12 +1,8 @@
-import configFile from "src/state/config.json";
+import calamusConfig from "src/state/config/calamus.json";
+import ftmConfig from "src/state/config/bttc.json";
+import bttcConfig from "src/state/config/bttc.json";
+import avaxConfig from "src/state/config/bttc.json";
 
-export const hubAddress = configFile.hub.toLowerCase()
-export const marketAddress = configFile.market.toLowerCase()
-export const loanAddress = configFile.loan.toLowerCase()
-export const rentalAddress = configFile.rental.toLowerCase()
-export const daiAddress = configFile.dai.toLowerCase()
-export const usdcAddress = configFile.usdc.toLowerCase()
-export const usdtAddress = configFile.usdt.toLowerCase()
 export const noneAddress = "0x0000000000000000000000000000000000000000"
 
 export const config = {
@@ -24,63 +20,72 @@ export const config = {
             decimals: 18,
             address: noneAddress
         },
-        hubAddress: hubAddress,
-        loanAddress: loanAddress,
-        rentalAddress: rentalAddress,
-        marketAddress: marketAddress,
+        hubAddress: calamusConfig.hub,
+        loanAddress: calamusConfig.loan,
+        rentalAddress: calamusConfig.rental,
+        marketAddress: calamusConfig.market,
     },
-    "picasarts": {
-        rpcAddress: "https://goerli.infura.io/v3/",
+    "bttc": {
+        rpcAddress: "https://pre-rpc.bt.io/",
         logoURL: "",
-        wssAddress: "wss://goerli.infura.io/v3/",
-        chainId: 5,
-        blockchainExplorer: "https://goerli.etherscan.io",
-        name: "Goerli chain",
+        wssAddress: "wss://pre-rpc.bt.io:8546",
+        chainId: 1029,
+        blockchainExplorer: "https://testscan.bt.io/",
+        name: "BiiTorrent Chain",
         nativeToken: {
-            name: "ETH",
-            symbol: "ETH",
-            logo: "/eth.png",
+            name: "BTT",
+            symbol: "BTT",
+            logo: "/bttc.png",
             address: noneAddress,
             decimals: 18
         },
-        hubAddress: hubAddress,
-        loanAddress: loanAddress,
-        rentalAddress: rentalAddress,
-        marketAddress: marketAddress,
+        hubAddress: bttcConfig.hub,
+        loanAddress: bttcConfig.loan,
+        rentalAddress: bttcConfig.rental,
+        marketAddress: bttcConfig.market,
+    },
+    "avax": {
+        rpcAddress: "https://api.avax-test.network/ext/bc/C/rpc",
+        logoURL: "",
+        wssAddress: "https://api.avax-test.network/ext/bc/C/rpc",
+        chainId: 43113,
+        blockchainExplorer: "https://testnet.snowtrace.io/",
+        name: "Avalanche Fuji C-Chain",
+        nativeToken: {
+            name: "AVAX",
+            symbol: "AVAX",
+            logo: "/avax.png",
+            address: noneAddress,
+            decimals: 18
+        },
+        hubAddress: avaxConfig.hub,
+        loanAddress: avaxConfig.loan,
+        rentalAddress: avaxConfig.rental,
+        marketAddress: avaxConfig.market,
+    },
+    "ftm": {
+        rpcAddress: "https://rpc.testnet.fantom.network/",
+        logoURL: "",
+        wssAddress: "https://rpc.testnet.fantom.network/",
+        chainId: 4002,
+        blockchainExplorer: "https://testnet.ftmscan.com/",
+        name: "Fantom testnet",
+        nativeToken: {
+            name: "FTM",
+            symbol: "FTM",
+            logo: "/ftm.png",
+            address: noneAddress,
+            decimals: 18
+        },
+        hubAddress: ftmConfig.hub,
+        loanAddress: ftmConfig.loan,
+        rentalAddress: ftmConfig.rental,
+        marketAddress: ftmConfig.market,
     },
 }
 
 export const chainInfos = {
-    "calamus": { label: "Calamus Chain", logo: "/calamus.png", disabled: false },
-    "picasarts": { label: "Picasarts Chain", logo: "/picsarts.webp", disabled: false },
+    "ftm": { label: "Fantom", logo: "/ftm.png", disabled: false },
+    "avax": { label: "Avalanche C Chain", logo: "/avax.png", disabled: false },
+    "bttc": { label: "BiiTorrent Chain", logo: "/bttc.png", disabled: false },
 }
-export const tokenArray = [
-    {
-        tokenId: noneAddress,
-        tokenAbbr: "CLT",
-        tokenDecimal: 18,
-        name: "Calamus token",
-        tokenLogo: "/calamus.png"
-    },
-    {
-        tokenId: daiAddress,
-        tokenAbbr: "DAI",
-        tokenDecimal: 18,
-        name: "Maker DAI",
-        tokenLogo: "/dai.png"
-    },
-    {
-        tokenId: usdcAddress,
-        tokenAbbr: "USDC",
-        tokenDecimal: 18,
-        name: "Coinbase USD",
-        tokenLogo: "/usdc.png"
-    },
-    {
-        tokenId: usdtAddress,
-        tokenAbbr: "USDT",
-        tokenDecimal: 18,
-        name: "Tether USD",
-        tokenLogo: "/usdt.png"
-    },
-];

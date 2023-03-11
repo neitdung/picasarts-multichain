@@ -1,10 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ethers } from "ethers";
-import { loanAddress, config } from "src/state/chain/config";
+import { config } from "src/state/chain/config";
 import NFTLoan from "src/abis/NFTLoan.json";
 
 const loadContract = createAsyncThunk("loan/contract", async (_payload, { getState }) => {
     let state = await getState();
+    const { loanAddress } = config[state.chain.selectedChain];
+
     if (state.chain.account) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();

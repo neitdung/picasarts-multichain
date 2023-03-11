@@ -78,9 +78,11 @@ export default function NFTCreate() {
                 duration: 3000,
                 isClosable: true,
             });
-            let createEvents = createResults.events;
+            let createEvent = createResults.events.find(item => item.event == "Transfer");
             await new Promise(resolve => setTimeout(resolve, 3000));
-            router.push(`/nft/${contractSelected}@${createEvents[createEvents.length - 1].args.tokenId.toString()}/list`);
+            if (createEvent) {
+                router.push(`/nft/${contractSelected}@${createEvent.args[2].toString()}/list`);
+            }
             setIsLoading(false);
         } catch (e) {
             console.log(e)
