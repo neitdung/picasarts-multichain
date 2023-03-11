@@ -31,7 +31,7 @@ export const config = {
         wssAddress: "wss://pre-rpc.bt.io:8546",
         chainId: 1029,
         blockchainExplorer: "https://testscan.bt.io/",
-        name: "BiiTorrent Chain",
+        name: "BitTorrent Chain",
         nativeToken: {
             name: "BTT",
             symbol: "BTT",
@@ -87,5 +87,5 @@ export const config = {
 export const chainInfos = {
     "ftm": { label: "Fantom", logo: "/ftm.png", disabled: false },
     "avax": { label: "Avalanche C Chain", logo: "/avax.png", disabled: false },
-    "bttc": { label: "BiiTorrent Chain", logo: "/bttc.png", disabled: false },
+    "bttc": { label: "BitTorrent Chain", logo: "/bttc.png", disabled: false },
 }
