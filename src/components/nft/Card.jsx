@@ -44,7 +44,7 @@ export default function NFTCard({
                     h={300}
                     w={'full'}
                     src={
-                        editImage ? URL.createObjectURL(image) : image ? `http://127.0.0.1:8080/btfs/${image}` : 'https://picsum.photos/300/300'
+                        editImage ? URL.createObjectURL(image) : image ? `https://fs.picasarts.io/btfs/${image}` : 'https://picsum.photos/300/300'
                     }
                     objectFit={'cover'}
                     borderRadius={10}

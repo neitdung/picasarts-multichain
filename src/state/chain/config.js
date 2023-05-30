@@ -1,17 +1,17 @@
 import calamusConfig from "src/state/config/calamus.json";
-import ftmConfig from "src/state/config/bttc.json";
+import ftmConfig from "src/state/config/ftm.json";
 import bttcConfig from "src/state/config/bttc.json";
-import avaxConfig from "src/state/config/bttc.json";
+import avaxConfig from "src/state/config/avax.json";
 
 export const noneAddress = "0x0000000000000000000000000000000000000000"
 
 export const config = {
     "calamus": {
-        rpcAddress: "http://localhost:8545",
+        rpcAddress: "http://127.0.0.1:8545",
         logoURL: "",
-        wssAddress: "wss://localhost:8545",
+        wssAddress: "wss://127.0.0.1:8545",
         chainId: 1337,
-        blockchainExplorer: "http://localhost:8545",
+        blockchainExplorer: "http://127.0.0.1:8545",
         name: "Calamus chain",
         nativeToken: {
             name: "ETH",

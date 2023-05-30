@@ -53,14 +53,14 @@ export default function Collectibles() {
                 h={300}
                 w={'full'}
                 src={
-                    data.banner ? `http://127.0.0.1:8080/btfs/${data.banner}` : 'https://picsum.photos/2000/200'
+                    data.banner ? `https://fs.picasarts.io/btfs/${data.banner}` : 'https://picsum.photos/2000/200'
                 }
                 objectFit={'cover'}
             />
             <Flex justify={'center'} mt={-20}>
                 <Avatar
                     src={
-                        data.avatar ? `http://127.0.0.1:8080/btfs/${data.avatar}` : 'https://picsum.photos/200/200'
+                        data.avatar ? `https://fs.picasarts.io/btfs/${data.avatar}` : 'https://picsum.photos/200/200'
                     }
                     size={'2xl'}
                     alt={'Creator'}

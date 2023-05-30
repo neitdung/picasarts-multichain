@@ -29,14 +29,14 @@ export default function UserCard({ name, bio, address, avatar, banner, facebook,
                 h={200}
                 w={'full'}
                 src={
-                    editBanner ? URL.createObjectURL(banner) : banner ? `http://127.0.0.1:8080/btfs/${banner}` : 'https://picsum.photos/500/200'
+                    editBanner ? URL.createObjectURL(banner) : banner ? `https://fs.picasarts.io/btfs/${banner}` : 'https://picsum.photos/500/200'
                 }
                 objectFit={'cover'}
             />
             <Flex justify={'center'} mt={-8}>
                 <Avatar
                     src={
-                        editAvatar ? URL.createObjectURL(avatar) : avatar ? `http://127.0.0.1:8080/btfs/${avatar}` : 'https://picsum.photos/80'
+                        editAvatar ? URL.createObjectURL(avatar) : avatar ? `https://fs.picasarts.io/btfs/${avatar}` : 'https://picsum.photos/80'
                     }
                     size={'lg'}
                     alt={'Creator'}

@@ -51,7 +51,7 @@ export default function RentalCard({
                     h={300}
                     w={'full'}
                     src={
-                        image ? `http://127.0.0.1:8080/btfs/${image}` : 'https://picsum.photos/300/300'
+                        image ? `https://fs.picasarts.io/btfs/${image}` : 'https://picsum.photos/300/300'
                     }
                     objectFit={'cover'}
                     borderRadius={10}

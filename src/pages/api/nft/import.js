@@ -27,7 +27,7 @@ const handler = async (req, res) => {
 
 async function saveNft(contract, item) {
     const metadataURI = await contract.tokenURI(parseInt(item)).call();
-    const ipfsEndpoint = metadataURI.replace("ipfs://", "http://127.0.0.1:8080/btfs/");
+    const ipfsEndpoint = metadataURI.replace("ipfs://", "https://fs.picasarts.io/btfs/");
     const ipnft = metadataURI.replace("ipfs://", "").replace("/metadata.json", "");
     const metadata = await fetch(ipfsEndpoint, { headers: { "content-type": "application/json" } });
     const metaRes = await metadata.json();

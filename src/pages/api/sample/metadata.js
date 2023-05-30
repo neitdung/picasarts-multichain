@@ -137,7 +137,7 @@ const handler = async (req, res) => {
                 const formData = new FormData()
                 formData.append('File', buf);
                 const options = { method: 'POST', body: formData };
-                nmspromise.push(fetch('http://localhost:5001/api/v1/add', options))
+                nmspromise.push(fetch('http://127.0.0.1:5001/api/v1/add', options))
             }
             let nmsFetch = await Promise.all(nmspromise);
             let nmsJson = [];
@@ -200,7 +200,7 @@ const handler = async (req, res) => {
                 const formData = new FormData()
                 formData.append('File', buf);
                 const options = { method: 'POST', body: formData };
-                cspromise.push(fetch('http://localhost:5001/api/v1/add', options))
+                cspromise.push(fetch('http://127.0.0.1:5001/api/v1/add', options))
             }
             let csFetch = await Promise.all(cspromise);
             let csJson = [];
@@ -263,7 +263,7 @@ const handler = async (req, res) => {
                 const formData = new FormData()
                 formData.append('File', buf);
                 const options = { method: 'POST', body: formData };
-                cmpromise.push(fetch('http://localhost:5001/api/v1/add', options))
+                cmpromise.push(fetch('http://127.0.0.1:5001/api/v1/add', options))
             }
             let cmFetch = await Promise.all(cmpromise);
             let cmJson = [];

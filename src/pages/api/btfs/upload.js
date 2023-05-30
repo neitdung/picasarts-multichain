@@ -22,7 +22,7 @@ const handler = async (req, res) => {
         const formData = new FormData()
         formData.append('File', contents)
         const options = { method: 'POST', body: formData };
-        let result = await fetch('http://localhost:5001/api/v1/add', options)
+        let result = await fetch('http://127.0.0.1:5001/api/v1/add', options)
         let fileRes = await result.json();
         return res.status(200).send(fileRes);
     } else {

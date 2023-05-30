@@ -67,14 +67,14 @@ export default function CollectionCid({ cid }) {
                 h={300}
                 w={'full'}
                 src={
-                    info.banner ? `http://127.0.0.1:8080/btfs/${info.banner}` : 'https://picsum.photos/2000/200'
+                    info.banner ? `https://fs.picasarts.io/btfs/${info.banner}` : 'https://picsum.photos/2000/200'
                 }
                 objectFit={'cover'}
             />
             <Flex justify={'center'} mt={-20}>
                 <Avatar
                     src={
-                        info.logo ? `http://127.0.0.1:8080/btfs/${info.logo}` : 'https://picsum.photos/200/200'
+                        info.logo ? `https://fs.picasarts.io/btfs/${info.logo}` : 'https://picsum.photos/200/200'
                     }
                     size={'2xl'}
                     alt={'Creator'}

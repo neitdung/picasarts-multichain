@@ -15,7 +15,7 @@ const handler = async (req, res) => {
             const pnft3 = new ethers.Contract(configFile.pnft3, PNFT.abi, signer3);
             let nmsPromise = [];
             for (let i = 0; i < metadataHash.nms.length; i++) {
-                nmsPromise.push(fetch(`http://127.0.0.1:8080/btfs/${metadataHash.nms[i]}`, { headers: { 'Content-Type': 'application/json' }}));
+                nmsPromise.push(fetch(`https://fs.picasarts.io/btfs/${metadataHash.nms[i]}`, { headers: { 'Content-Type': 'application/json' } }));
             }
             let nmsJson = await Promise.all(nmsPromise);
             let nmsJsonPromise = [];
@@ -25,7 +25,7 @@ const handler = async (req, res) => {
             let nmsVal = await Promise.all(nmsJsonPromise);
             let csPromise = [];
             for (let i = 0; i < metadataHash.cs.length; i++) {
-                csPromise.push(fetch(`http://127.0.0.1:8080/btfs/${metadataHash.cs[i]}`, { headers: { 'Content-Type': 'application/json' } }));
+                csPromise.push(fetch(`https://fs.picasarts.io/btfs/${metadataHash.cs[i]}`, { headers: { 'Content-Type': 'application/json' } }));
             }
             let csJson = await Promise.all(csPromise);
             let csJsonPromise = [];
@@ -35,7 +35,7 @@ const handler = async (req, res) => {
             let csVal = await Promise.all(csJsonPromise);
             let cmPromise = [];
             for (let i = 0; i < metadataHash.cm.length; i++) {
-                cmPromise.push(fetch(`http://127.0.0.1:8080/btfs/${metadataHash.cm[i]}`, { headers: { 'Content-Type': 'application/json' } }));
+                cmPromise.push(fetch(`https://fs.picasarts.io/btfs/${metadataHash.cm[i]}`, { headers: { 'Content-Type': 'application/json' } }));
             }
             let cmJson = await Promise.all(cmPromise);
             let cmJsonPromise = [];

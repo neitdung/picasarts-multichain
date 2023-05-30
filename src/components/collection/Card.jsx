@@ -36,14 +36,14 @@ export default function CollectionCard({ cid, name, description, logo, banner, f
                     h={200}
                     w={'full'}
                     src={
-                        editBanner ? URL.createObjectURL(banner) : banner ? `http://127.0.0.1:8080/btfs/${banner}` : 'https://picsum.photos/500/200'
+                        editBanner ? URL.createObjectURL(banner) : banner ? `https://fs.picasarts.io/btfs/${banner}` : 'https://picsum.photos/500/200'
                     }
                     objectFit={'cover'}
                 />
                 <Flex justify={'center'} mt={-8}>
                     <Image
                         src={
-                            editLogo ? URL.createObjectURL(logo) : logo ? `http://127.0.0.1:8080/btfs/${logo}` : 'https://picsum.photos/80'
+                            editLogo ? URL.createObjectURL(logo) : logo ? `https://fs.picasarts.io/btfs/${logo}` : 'https://picsum.photos/80'
                         }
                         h={'60px'}
                         w={'60px'}

@@ -66,14 +66,14 @@ export default function UserPage({address}) {
                 h={300}
                 w={'full'}
                 src={
-                    userData.banner ? `http://127.0.0.1:8080/btfs/${userData.banner}` : 'https://picsum.photos/2000/200'
+                    userData.banner ? `https://fs.picasarts.io/btfs/${userData.banner}` : 'https://picsum.photos/2000/200'
                 }
                 objectFit={'cover'}
             />
             <Flex justify={'center'} mt={-20}>
                 <Avatar
                     src={
-                        userData.avatar ? `http://127.0.0.1:8080/btfs/${userData.avatar}` : 'https://picsum.photos/200/200'
+                        userData.avatar ? `https://fs.picasarts.io/btfs/${userData.avatar}` : 'https://picsum.photos/200/200'
                     }
                     size={'2xl'}
                     alt={'Creator'}

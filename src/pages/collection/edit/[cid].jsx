@@ -35,7 +35,7 @@ export default function CollectionEdit({ cid }) {
         setIsFirstLoading(true);
         let cData = await contract.getCollectionData(cid);
         if (cData.name) {
-            let cMetadata = await fetch(`http://127.0.0.1:8080/btfs/${cData.metadata}`, {
+            let cMetadata = await fetch(`https://fs.picasarts.io/btfs/${cData.metadata}`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
